@@ -1,0 +1,102 @@
+# Proposed Changes to scripts/verify-network-policy.sh
+
+## Change 1: Add JSON Escaping (After line 284, before line 287)
+
+INSERT after line 284:
+```bash
+# Escape hypothesis reasoning for safe JSON insertion
+HYPOTHESIS_REASONING_ESCAPED="${HYPOTHESIS_REASONING//\\/\\\\}"  # Escape backslashes first
+HYPOTHESIS_REASONING_ESCAPED="${HYPOTHESIS_REASONING_ESCAPED//\"/\\\"}"  # Then escape quotes
+
+```
+
+## Change 2: Update JSON reasoning reference (Currently line 340, will become line 344)
+
+REPLACE:
+```bash
+    "reasoning": "$HYPOTHESIS_REASONING",
+```
+
+WITH:
+```bash
+    "reasoning": "$HYPOTHESIS_REASONING_ESCAPED",
+```
+
+## Change 3: Update console label (Currently line 363, will become line 367)
+
+REPLACE:
+```bash
+echo "  Backend→DB Blocked: $([ "$BACKEND_TO_DB_BLOCKED" = true ] && echo "✅" || echo "❌")"
+```
+
+WITH:
+```bash
+echo "  Backend→DB Connectivity: $([ "$BACKEND_TO_DB_BLOCKED" = false ] && echo "✅ Connected" || echo "❌ Affected ($BACKEND_TO_DB_STATUS)")"
+```
+
+---
+
+## Complete Modified Section (Lines 284-290 after changes)
+
+```bash
+fi
+echo ""
+
+# Escape hypothesis reasoning for safe JSON insertion
+HYPOTHESIS_REASONING_ESCAPED="${HYPOTHESIS_REASONING//\\/\\\\}"  # Escape backslashes first
+HYPOTHESIS_REASONING_ESCAPED="${HYPOTHESIS_REASONING_ESCAPED//\"/\\\"}"  # Then escape quotes
+
+# Generate JSON output
+echo "Writing results to: $OUTPUT_FILE"
+cat > "$OUTPUT_FILE" << EOF
+```
+
+---
+
+## Modified JSON Section (Line 344 after changes)
+
+```json
+  "hypothesis": {
+    "statement": "Applying NetworkPolicy that isolates PostgreSQL will block required Backend → PostgreSQL communication, causing application failure while PostgreSQL pod remains running",
+    "confirmed": $([ "$HYPOTHESIS_CONFIRMED" = true ] && echo "true" || echo "false"),
+    "reasoning": "$HYPOTHESIS_REASONING_ESCAPED",
+    "conditions_checked": [
+```
+
+---
+
+## Modified Console Output Section (Line 367 after changes)
+
+```bash
+echo "  Frontend→Backend: $([ "$FRONTEND_TO_BACKEND_OK" = true ] && echo "✅" || echo "❌")"
+echo "  Backend→DB Connectivity: $([ "$BACKEND_TO_DB_BLOCKED" = false ] && echo "✅ Connected" || echo "❌ Affected ($BACKEND_TO_DB_STATUS)")"
+echo "  Backend Health Failed: $([ "$BACKEND_HEALTH_FAILED" = true ] && echo "✅" || echo "❌")"
+```
+
+---
+
+## Line Count Impact
+
+- Current file: 371 lines
+- After changes: 375 lines (+4 lines for escaping logic)
+
+---
+
+## What This Fixes
+
+1. **JSON Safety:** Prevents invalid JSON from special characters in hypothesis reasoning
+2. **Console Accuracy:** Label now reflects actual observation (connectivity affected) rather than interpretation (blocked)
+3. **Status Clarity:** Shows the actual classification (connection_timeout, connection_refused, etc.)
+
+---
+
+## What This Preserves
+
+- ✅ All Test 3 socket logic
+- ✅ Six-condition hypothesis check
+- ✅ Conservative interpretation language
+- ✅ All other JSON fields
+- ✅ Liveness probe changes
+- ✅ `/live` endpoint
+- ✅ All error handling
+
