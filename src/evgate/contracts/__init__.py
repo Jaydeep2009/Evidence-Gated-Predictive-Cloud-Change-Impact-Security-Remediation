@@ -19,8 +19,13 @@ from .change import (
     SecurityObjective,
     Selector,
 )
-from .evidence import Evidence, Provenance, RuntimeCoverage, StaticCompleteness
-from .evidence import make_evidence_id
+from .evidence import (
+    Evidence,
+    Provenance,
+    RuntimeCoverage,
+    StaticCompleteness,
+    make_evidence_id,
+)
 from .experiment import ExperimentRecord
 from .gate import EvidenceRequest, GateDecision, ReasonCode
 from .groundtruth import (

@@ -70,8 +70,8 @@ class AnalysisResult(BaseModel):
     change_id: str
     evidence_config: Literal["A", "B", "C", "D", "D_NOGATE"]
     gate_enabled: bool
-    prediction: "Prediction"  # forward reference
-    gate: "GateDecision"  # forward reference
+    prediction: Prediction  # forward reference
+    gate: GateDecision  # forward reference
     graph_ref: str | None = None  # path to exported graph json
     remediation: Remediation | None = None
     versions: dict[str, str] = Field(default_factory=dict)  # code sha, config hash, etc

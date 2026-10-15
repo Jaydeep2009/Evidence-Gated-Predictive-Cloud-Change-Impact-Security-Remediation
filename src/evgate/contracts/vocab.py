@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 # Node ID format: "<kind>:<namespace>/<name>" or "<kind>:/<name>" for cluster-scoped
 # kinds: component | workload | k8s-service | policy | principal | role | config | iac | external
@@ -17,7 +17,7 @@ from enum import Enum
 NodeId = str
 
 
-class Relationship(str, Enum):
+class Relationship(StrEnum):
     """Types of relationships between nodes in the evidence graph."""
 
     # Application-level dependency
@@ -50,7 +50,7 @@ class Relationship(str, Enum):
     NEEDS_PERMISSION = "NEEDS_PERMISSION"  # component -> permission
 
 
-class EvidenceType(str, Enum):
+class EvidenceType(StrEnum):
     """Source type of evidence."""
 
     INFRASTRUCTURE = "infrastructure"
@@ -58,7 +58,7 @@ class EvidenceType(str, Enum):
     RUNTIME = "runtime"
 
 
-class Classification(str, Enum):
+class Classification(StrEnum):
     """How the evidence was obtained."""
 
     OBSERVED = "observed"  # directly captured
@@ -66,7 +66,7 @@ class Classification(str, Enum):
     VERIFIED = "verified"  # confirmed through testing
 
 
-class Decision(str, Enum):
+class Decision(StrEnum):
     """Evidence gate decision outcomes."""
 
     SAFE = "SAFE"
