@@ -28,6 +28,12 @@ jobs:
       - name: Run mypy on contracts
         run: mypy --strict src/evgate/contracts/
         
+      - name: Run mypy on graph
+        run: mypy --strict src/evgate/graph/
+        
+      - name: Run mypy on prediction
+        run: mypy --strict src/evgate/prediction/
+        
       - name: Check formatting with black
         run: black --check src/ tests/
 
