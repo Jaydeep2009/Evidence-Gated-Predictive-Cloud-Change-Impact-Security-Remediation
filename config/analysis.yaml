@@ -1,0 +1,24 @@
+# Evidence-Gated Analysis Configuration
+# These are initial guesses; tuned on dev split only, then frozen
+
+# Reliability weights for evidence types (0.0-1.0)
+# How much to trust each evidence type when forming beliefs
+reliability:
+  infrastructure: 0.60  # Declarative config (subject to drift)
+  application: 0.80     # Source code analysis (what code says it does)
+  runtime: 0.90         # Observed behavior (ground truth, but may be incomplete)
+
+# Thresholds for decision making
+tau_pos: 0.50           # belief >= tau_pos => dependency considered present
+tau_risk: 0.50          # operational_risk >= tau_risk => operational label "high"
+tau_suff_pos: 0.60      # sufficiency needed to call RISKY from positive evidence
+tau_suff_neg: 0.70      # sufficiency needed to call SAFE from absence evidence
+
+# Runtime evidence quality requirements
+min_endpoint_coverage: 0.50  # Minimum coverage to consider runtime evidence informative
+
+# Evidence aggregation parameters
+top_k_per_type: 3       # Max evidence items per type to limit correlated double-counting
+
+# Note: These values will be tuned on the dev split and frozen before test evaluation
+# See implementation.md §8.2 and §9.4
