@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-10-08T16:58:47.023Z",
+  "milestone": "2",
+  "cluster": "poc-cluster",
+  "namespace": "poc-app",
+  "policy": {
+    "name": "isolate-database",
+    "status": "active",
+    "description": "Isolate PostgreSQL pods from all ingress traffic"
+  },
+  "expected_behavior": {
+    "frontend_accessible": true,
+    "frontend_to_backend": "success",
+    "backend_to_database": "blocked",
+    "backend_health": "unhealthy",
+    "database_pod": "running",
+    "end_to_end": "failed"
+  },
+  "observed_behavior": {
+    "frontend_accessible": true,
+    "frontend_to_backend": "success",
+    "backend_to_database": "blocked",
+    "backend_health": "healthy_or_unknown",
+    "backend_health_http_status": "unknown",
+    "database_pod": "running",
+    "end_to_end": "unknown"
+  },
+  "verification_method": {
+    "network_connectivity_test": "Python socket.connect_ex() from backend pod to database-service:5432",
+    "application_health_test": "/health endpoint queried from backend pod",
+    "pod_status_test": "kubectl get pods"
+  },
+  "verification_results": {
+    "policy_exists": true,
+    "network_connectivity_blocked": true,
+    "backend_health_indicates_failure": false,
+    "postgres_pod_still_running": true
+  },
+  "experiment_hypothesis": "Applying NetworkPolicy that isolates PostgreSQL will block required Backend → PostgreSQL communication, causing application failure while PostgreSQL pod remains running",
+  "hypothesis_confirmed": false,
+  "notes": "Results populated after actual execution at 2026-10-08T16:58:47.023Z"
+}

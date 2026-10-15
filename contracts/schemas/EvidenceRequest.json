@@ -1,0 +1,31 @@
+{
+  "description": "A request for additional evidence to improve decision confidence.",
+  "properties": {
+    "action": {
+      "enum": [
+        "run_workload",
+        "exercise_endpoint",
+        "provide_source",
+        "refresh_snapshot",
+        "resolve_conflict"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    },
+    "why": {
+      "title": "Why",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "target",
+    "why"
+  ],
+  "title": "EvidenceRequest",
+  "type": "object"
+}

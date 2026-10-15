@@ -1,0 +1,77 @@
+{
+  "description": "Effect of a change on a permission grant.",
+  "properties": {
+    "kind": {
+      "const": "permission",
+      "default": "permission",
+      "title": "Kind",
+      "type": "string"
+    },
+    "principal": {
+      "title": "Principal",
+      "type": "string"
+    },
+    "verb": {
+      "title": "Verb",
+      "type": "string"
+    },
+    "api_group": {
+      "title": "Api Group",
+      "type": "string"
+    },
+    "resource": {
+      "title": "Resource",
+      "type": "string"
+    },
+    "resource_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resource Name"
+    },
+    "namespace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Namespace"
+    },
+    "before": {
+      "enum": [
+        "granted",
+        "denied"
+      ],
+      "title": "Before",
+      "type": "string"
+    },
+    "after": {
+      "enum": [
+        "granted",
+        "denied"
+      ],
+      "title": "After",
+      "type": "string"
+    }
+  },
+  "required": [
+    "principal",
+    "verb",
+    "api_group",
+    "resource",
+    "before",
+    "after"
+  ],
+  "title": "PermissionEffect",
+  "type": "object"
+}

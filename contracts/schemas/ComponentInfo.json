@@ -1,0 +1,52 @@
+{
+  "description": "Information about a component in the system inventory.",
+  "properties": {
+    "node_id": {
+      "title": "Node Id",
+      "type": "string"
+    },
+    "labels": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Labels",
+      "type": "object"
+    },
+    "aliases": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Aliases",
+      "type": "array"
+    },
+    "namespace": {
+      "title": "Namespace",
+      "type": "string"
+    },
+    "ports": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Ports",
+      "type": "array"
+    },
+    "readiness_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Readiness Path"
+    }
+  },
+  "required": [
+    "node_id",
+    "namespace"
+  ],
+  "title": "ComponentInfo",
+  "type": "object"
+}

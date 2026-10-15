@@ -1,0 +1,37 @@
+{
+  "description": "Static validation results for a remediation.",
+  "properties": {
+    "preserves_required": {
+      "title": "Preserves Required",
+      "type": "boolean"
+    },
+    "keeps_objective": {
+      "title": "Keeps Objective",
+      "type": "boolean"
+    },
+    "introduces_wildcard": {
+      "title": "Introduces Wildcard",
+      "type": "boolean"
+    },
+    "checked_with": {
+      "const": "semantics_engine",
+      "default": "semantics_engine",
+      "title": "Checked With",
+      "type": "string"
+    },
+    "details": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Details",
+      "type": "array"
+    }
+  },
+  "required": [
+    "preserves_required",
+    "keeps_objective",
+    "introduces_wildcard"
+  ],
+  "title": "StaticValidation",
+  "type": "object"
+}

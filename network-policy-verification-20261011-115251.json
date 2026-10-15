@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-10-11T11:52:51.432Z",
+  "milestone": "2",
+  "cluster": "poc-cluster",
+  "namespace": "poc-app",
+  "policy": {
+    "name": "isolate-database",
+    "status": "active",
+    "description": "Isolate PostgreSQL pods from all ingress traffic"
+  },
+  "expected_behavior": {
+    "frontend_accessible": true,
+    "frontend_to_backend": "success",
+    "backend_to_database": "connectivity affected when NetworkPolicy active",
+    "backend_health": "readiness not_ready, liveness healthy, phase Running when database unreachable",
+    "database_pod": "running",
+    "end_to_end": "not_tested"
+  },
+  "observed_behavior": {
+    "frontend_accessible": true,
+    "frontend_to_backend": "success",
+    "backend_to_database": {
+      "socket_code": "11",
+      "socket_error": "unknown_code_11",
+      "status": "connection_error",
+      "interpretation": "Socket result is consistent with NetworkPolicy blocking traffic when status is connection_timeout and corroborating evidence from pod state is present. Does not definitively prove causation."
+    },
+    "backend_health": {
+      "phase": "Running",
+      "readiness": "not_ready",
+      "liveness": "healthy",
+      "restart_count": 1
+    },
+    "database_pod": "running",
+    "end_to_end": "not_verified"
+  },
+  "verification_method": {
+    "network_connectivity_test": "Python socket.connect_ex() from backend pod to database-service:5432, with explicit kubectl exec status validation",
+    "socket_code_interpretation": "Linux-specific error code mapping (0=connected, 110=ETIMEDOUT, 111=ECONNREFUSED, 113=EHOSTUNREACH, 101=ENETUNREACH)",
+    "application_health_test": "Kubernetes readiness state (primary) and /live endpoint liveness check",
+    "pod_status_test": "kubectl get pods with phase and condition inspection"
+  },
+  "verification_results": {
+    "policy_exists": true,
+    "backend_to_database_status": "connection_error",
+    "backend_health_indicates_failure": true,
+    "postgres_pod_still_running": true
+  },
+  "hypothesis": {
+    "statement": "Applying NetworkPolicy that isolates PostgreSQL will block required Backend \u2192 PostgreSQL communication, causing application failure while PostgreSQL pod remains running",
+    "conditions_met": false,
+    "reasoning": "Hypothesis NOT confirmed. Required conditions: [1. Policy exists: true] [2. Connection timeout: false (connection_error)] [3. Backend readiness not_ready: true] [4. Backend liveness healthy: true] [5. Backend Running: true] [6. PostgreSQL Running: true]",
+    "conditions_checked": [
+      "NetworkPolicy exists",
+      "Backend\u2192Database connection timeout (socket code 110)",
+      "Backend readiness not_ready",
+      "Backend liveness healthy",
+      "Backend phase Running",
+      "PostgreSQL phase Running"
+    ],
+    "interpretation": "conditions_met indicates all six conditions aligned, consistent with NetworkPolicy enforcement. This does not constitute definitive proof of causation."
+  },
+  "notes": "Conservative interpretation: Connection timeout alone does not prove NetworkPolicy causation. Hypothesis confirmation requires all six conditions. Socket error codes interpreted as Linux-specific errno values."
+}

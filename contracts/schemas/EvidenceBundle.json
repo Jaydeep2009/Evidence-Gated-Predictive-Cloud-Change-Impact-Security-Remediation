@@ -1,0 +1,426 @@
+{
+  "$defs": {
+    "Classification": {
+      "description": "How the evidence was obtained.",
+      "enum": [
+        "observed",
+        "inferred",
+        "verified"
+      ],
+      "title": "Classification",
+      "type": "string"
+    },
+    "ComponentInfo": {
+      "description": "Information about a component in the system inventory.",
+      "properties": {
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "object"
+        },
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Aliases",
+          "type": "array"
+        },
+        "namespace": {
+          "title": "Namespace",
+          "type": "string"
+        },
+        "ports": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Ports",
+          "type": "array"
+        },
+        "readiness_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Readiness Path"
+        }
+      },
+      "required": [
+        "node_id",
+        "namespace"
+      ],
+      "title": "ComponentInfo",
+      "type": "object"
+    },
+    "Evidence": {
+      "description": "A single piece of evidence about a relationship between nodes.",
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "evidence_type": {
+          "$ref": "#/$defs/EvidenceType"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "subject": {
+          "title": "Subject",
+          "type": "string"
+        },
+        "relationship": {
+          "$ref": "#/$defs/Relationship"
+        },
+        "object": {
+          "title": "Object",
+          "type": "string"
+        },
+        "polarity": {
+          "default": "supports",
+          "enum": [
+            "supports",
+            "refutes"
+          ],
+          "title": "Polarity",
+          "type": "string"
+        },
+        "classification": {
+          "$ref": "#/$defs/Classification"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "evidence_type",
+        "source",
+        "subject",
+        "relationship",
+        "object",
+        "classification",
+        "confidence",
+        "observed_at",
+        "snapshot_id",
+        "provenance"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceType": {
+      "description": "Source type of evidence.",
+      "enum": [
+        "infrastructure",
+        "application",
+        "runtime"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "Provenance": {
+      "description": "Detailed provenance information for an evidence item.",
+      "properties": {
+        "source_type": {
+          "enum": [
+            "file",
+            "cluster",
+            "trace",
+            "log",
+            "probe",
+            "audit",
+            "iac_plan",
+            "manual"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "line_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Number"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "content_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Sha256"
+        },
+        "extractor": {
+          "title": "Extractor",
+          "type": "string"
+        },
+        "extractor_version": {
+          "default": "1.0.0",
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "extracted_at": {
+          "format": "date-time",
+          "title": "Extracted At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_type",
+        "source_path",
+        "extractor",
+        "extracted_at"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Relationship": {
+      "description": "Types of relationships between nodes in the evidence graph.",
+      "enum": [
+        "DEPENDS_ON",
+        "CALLS",
+        "CONNECTS_TO",
+        "FAILED_TO_CONNECT",
+        "OBSERVED_COMMUNICATION",
+        "READINESS_COUPLED",
+        "ALLOWS",
+        "DENIES",
+        "SELECTS",
+        "EXPOSES",
+        "DEPLOYED_AS",
+        "CONFIGURED_BY",
+        "RUNS_AS",
+        "HAS_PERMISSION",
+        "NEEDS_PERMISSION"
+      ],
+      "title": "Relationship",
+      "type": "string"
+    },
+    "RuntimeCoverage": {
+      "description": "What the runtime observation window actually exercised.\n\nNeeded to interpret ABSENCE of evidence - absence of observation\nis only meaningful if the window covered the relevant workload.",
+      "properties": {
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "workload_id": {
+          "title": "Workload Id",
+          "type": "string"
+        },
+        "requests_total": {
+          "title": "Requests Total",
+          "type": "integer"
+        },
+        "endpoints_exercised": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Endpoints Exercised",
+          "type": "array"
+        },
+        "endpoints_known": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Endpoints Known",
+          "type": "array"
+        },
+        "components_observed": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Components Observed",
+          "type": "array"
+        },
+        "spans_total": {
+          "default": 0,
+          "title": "Spans Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "window_start",
+        "window_end",
+        "workload_id",
+        "requests_total"
+      ],
+      "title": "RuntimeCoverage",
+      "type": "object"
+    },
+    "StaticCompleteness": {
+      "description": "How trustworthy 'no call found in code' is for one component.\n\nUsed to assess whether absence of application evidence is informative.",
+      "properties": {
+        "component": {
+          "title": "Component",
+          "type": "string"
+        },
+        "files_analyzed": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Files Analyzed",
+          "type": "array"
+        },
+        "parse_errors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parse Errors",
+          "type": "array"
+        },
+        "unresolved_dynamic_calls": {
+          "default": 0,
+          "title": "Unresolved Dynamic Calls",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "component"
+      ],
+      "title": "StaticCompleteness",
+      "type": "object"
+    }
+  },
+  "description": "A complete bundle of evidence from a snapshot.\n\nThis is the contract between Part 2 (evidence collection) and Part 3 (analysis).\nAll evidence must be from the pre-change (baseline) phase to avoid label leakage.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "bundle_id": {
+      "title": "Bundle Id",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "phase": {
+      "const": "pre_change",
+      "default": "pre_change",
+      "title": "Phase",
+      "type": "string"
+    },
+    "collected_at": {
+      "format": "date-time",
+      "title": "Collected At",
+      "type": "string"
+    },
+    "config_fingerprint": {
+      "title": "Config Fingerprint",
+      "type": "string"
+    },
+    "inventory": {
+      "items": {
+        "$ref": "#/$defs/ComponentInfo"
+      },
+      "title": "Inventory",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "coverage": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RuntimeCoverage"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "static_completeness": {
+      "items": {
+        "$ref": "#/$defs/StaticCompleteness"
+      },
+      "title": "Static Completeness",
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "bundle_id",
+    "snapshot_id",
+    "collected_at",
+    "config_fingerprint",
+    "inventory",
+    "evidence"
+  ],
+  "title": "EvidenceBundle",
+  "type": "object"
+}

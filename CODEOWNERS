@@ -1,0 +1,99 @@
+# Evidence-Gated Predictive Cloud Change Impact & Security Remediation
+# Code Ownership by Part (4-person team)
+#
+# Part 1: Testbed & Ground-Truth Foundation
+# Part 2: Evidence & Change Semantics
+# Part 3: Core Engine, Graph, Prediction, Gate, Interfaces
+# Part 4: Remediation, Scenarios, Ground Truth, Evaluation, Paper
+
+# Default: Part 3 (project infrastructure)
+* @part3
+
+# --- Part 1 ---
+/services/frontend/ @part1
+/services/backend/app/main.py @part1
+/services/backend/Dockerfile @part1
+/kubernetes/namespace.yaml @part1
+/kubernetes/frontend/ @part1
+/kubernetes/backend/ @part1
+/kubernetes/database/ @part1
+/kubernetes/policies/ @part1
+/scripts/setup-cluster.sh @part1
+/scripts/build-images.sh @part1
+/scripts/deploy-all.sh @part1
+/scripts/verify-baseline.sh @part1
+/scripts/apply-network-policy.sh @part1
+/scripts/remove-network-policy.sh @part1
+/scripts/verify-network-policy.sh @part1
+/scripts/cleanup.sh @part1
+/fixtures/ground_truth/ @part1
+/docs/MILESTONE-*.md @part1
+/docs/milestone-*.md @part1
+/testbed/ @part1
+
+# --- Part 2 ---
+/src/evgate/evidence/ @part2
+/src/evgate/semantics/ @part2
+/src/evgate/change/ @part2
+/src/evgate/workload/ @part2
+/telemetry/ @part2
+/config/sinks.yaml @part2
+/services/backend/Dockerfile.otel @part2
+/infrastructure/opentofu/modules/ @part2
+/scripts/p2-*.sh @part2
+/docs/p2/ @part2
+/tests/unit/evidence/ @part2
+/tests/unit/semantics/ @part2
+/tests/unit/change/ @part2
+/tests/integration/evidence/ @part2
+
+# --- Part 3 ---
+/pyproject.toml @part3
+/Makefile @part3
+/.github/ @part3
+/CODEOWNERS @part3
+/src/evgate/contracts/ @part3
+/src/evgate/graph/ @part3
+/src/evgate/prediction/ @part3
+/src/evgate/gate/ @part3
+/src/evgate/common/ @part3
+/src/evgate/report/ @part3
+/src/evgate/api/ @part3
+/src/evgate/pipeline.py @part3
+/src/evgate/cli.py @part3
+/config/analysis.yaml @part3
+/fixtures/golden/ @part3
+/docs/p3/ @part3
+/tests/unit/graph/ @part3
+/tests/unit/prediction/ @part3
+/tests/unit/gate/ @part3
+/tests/integration/pipeline/ @part3
+
+# --- Part 4 ---
+/src/evgate/remediation/ @part4
+/src/evgate/scenarios/ @part4
+/src/evgate/evaluation/ @part4
+/scenarios/ @part4
+/experiments/ @part4
+/paper/ @part4
+/infrastructure/opentofu/scenarios/ @part4
+/services/backend/app/routes_*.py @part4
+/services/audit-service/ @part4
+/kubernetes/overlays/ @part4
+/scripts/p4-*.sh @part4
+/docs/p4/ @part4
+/tests/unit/remediation/ @part4
+/tests/unit/scenarios/ @part4
+/tests/unit/evaluation/ @part4
+/tests/cluster/ @part4
+
+# Shared-file protocol (requires review by owner)
+/services/backend/app/main.py @part1 @part4
+/kubernetes/*/deployment.yaml @part1 @part2 @part4
+
+# Contracts changes require ALL owners
+/src/evgate/contracts/ @part1 @part2 @part3 @part4
+
+# Implementation and task planning
+/implementation.md @part1 @part2 @part3 @part4
+/task.md @part1 @part2 @part3 @part4

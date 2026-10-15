@@ -1,0 +1,36 @@
+{
+  "description": "Specification of a network path.",
+  "properties": {
+    "src": {
+      "title": "Src",
+      "type": "string"
+    },
+    "dst": {
+      "title": "Dst",
+      "type": "string"
+    },
+    "port": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Port"
+    },
+    "protocol": {
+      "default": "TCP",
+      "title": "Protocol",
+      "type": "string"
+    }
+  },
+  "required": [
+    "src",
+    "dst"
+  ],
+  "title": "PathSpec",
+  "type": "object"
+}
