@@ -83,7 +83,7 @@ jobs:
           
       - name: Generate and validate schemas
         run: |
-          python -c "from src.evgate.contracts import export_all_schemas; export_all_schemas()"
+          python -c "from src.evgate.contracts import export_schemas; export_schemas()"
           test -f contracts/schemas/Evidence.json
           test -f contracts/schemas/EvidenceBundle.json
           test -f contracts/schemas/ChangeSpec.json
