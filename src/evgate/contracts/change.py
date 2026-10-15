@@ -13,7 +13,9 @@ class Selector(BaseModel):
     """A selector that identifies one or more components."""
 
     components: list[NodeId]  # resolved against inventory
-    raw: dict[str, Any] = Field(default_factory=dict)  # original selector for explanation
+    raw: dict[str, Any] = Field(
+        default_factory=dict
+    )  # original selector for explanation
 
 
 class PathEffect(BaseModel):

@@ -19,7 +19,9 @@ class ProbeSpec(BaseModel):
     target: str  # URL / host:port / "<sa> <verb> <resource>"
     expect_status: int | None = None
     expect_body_contains: str | None = None  # content check (D8)
-    touches: list[NodeId] = Field(default_factory=list)  # components this probe exercises
+    touches: list[NodeId] = Field(
+        default_factory=list
+    )  # components this probe exercises
     required: bool = True  # a failing required probe == operational failure
 
 

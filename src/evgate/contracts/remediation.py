@@ -49,9 +49,7 @@ class Remediation(BaseModel):
     """A minimal remediation that preserves function while keeping security objective."""
 
     remediation_id: str
-    strategy: Literal[
-        "narrow_allow", "scope_down_permission", "retain_required_paths"
-    ]
+    strategy: Literal["narrow_allow", "scope_down_permission", "retain_required_paths"]
     patches: list[ManifestPatch] = Field(default_factory=list)
     preserves: list[PathSpec] = Field(default_factory=list)
     keeps_denied: list[PathSpec] = Field(default_factory=list)

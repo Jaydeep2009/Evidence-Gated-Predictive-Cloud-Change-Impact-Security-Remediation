@@ -38,7 +38,9 @@ class RuntimeCoverage(BaseModel):
     window_end: datetime
     workload_id: str
     requests_total: int
-    endpoints_exercised: list[str] = Field(default_factory=list)  # "backend:GET /health"
+    endpoints_exercised: list[str] = Field(
+        default_factory=list
+    )  # "backend:GET /health"
     endpoints_known: list[str] = Field(default_factory=list)  # from app evidence
     components_observed: list[str] = Field(default_factory=list)
     spans_total: int = 0
