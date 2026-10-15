@@ -297,9 +297,6 @@ def compute_belief_from_graph_edge(
     Returns:
         Belief score (0.0-1.0)
     """
-    # Get evidence by type from edge
-    by_type = edge_data.get("by_type", {})
-
     # Already computed in builder, but we could recompute for flexibility
     conf_by_type_computed = edge_data.get("conf_by_type", {})
 
