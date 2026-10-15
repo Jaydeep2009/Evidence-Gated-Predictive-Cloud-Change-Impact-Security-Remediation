@@ -1,0 +1,75 @@
+{
+  "description": "Specification for a runtime probe.",
+  "properties": {
+    "probe_id": {
+      "title": "Probe Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "http",
+        "tcp",
+        "k8s_auth"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "via": {
+      "enum": [
+        "host_nodeport",
+        "pod_exec",
+        "port_forward"
+      ],
+      "title": "Via",
+      "type": "string"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    },
+    "expect_status": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expect Status"
+    },
+    "expect_body_contains": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expect Body Contains"
+    },
+    "touches": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Touches",
+      "type": "array"
+    },
+    "required": {
+      "default": true,
+      "title": "Required",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "probe_id",
+    "kind",
+    "via",
+    "target"
+  ],
+  "title": "ProbeSpec",
+  "type": "object"
+}

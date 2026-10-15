@@ -1,0 +1,57 @@
+{
+  "description": "What the runtime observation window actually exercised.\n\nNeeded to interpret ABSENCE of evidence - absence of observation\nis only meaningful if the window covered the relevant workload.",
+  "properties": {
+    "window_start": {
+      "format": "date-time",
+      "title": "Window Start",
+      "type": "string"
+    },
+    "window_end": {
+      "format": "date-time",
+      "title": "Window End",
+      "type": "string"
+    },
+    "workload_id": {
+      "title": "Workload Id",
+      "type": "string"
+    },
+    "requests_total": {
+      "title": "Requests Total",
+      "type": "integer"
+    },
+    "endpoints_exercised": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Endpoints Exercised",
+      "type": "array"
+    },
+    "endpoints_known": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Endpoints Known",
+      "type": "array"
+    },
+    "components_observed": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Components Observed",
+      "type": "array"
+    },
+    "spans_total": {
+      "default": 0,
+      "title": "Spans Total",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "window_start",
+    "window_end",
+    "workload_id",
+    "requests_total"
+  ],
+  "title": "RuntimeCoverage",
+  "type": "object"
+}

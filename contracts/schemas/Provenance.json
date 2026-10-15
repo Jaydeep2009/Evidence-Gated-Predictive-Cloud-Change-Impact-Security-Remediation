@@ -1,0 +1,81 @@
+{
+  "description": "Detailed provenance information for an evidence item.",
+  "properties": {
+    "source_type": {
+      "enum": [
+        "file",
+        "cluster",
+        "trace",
+        "log",
+        "probe",
+        "audit",
+        "iac_plan",
+        "manual"
+      ],
+      "title": "Source Type",
+      "type": "string"
+    },
+    "source_path": {
+      "title": "Source Path",
+      "type": "string"
+    },
+    "line_number": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Line Number"
+    },
+    "locator": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Locator"
+    },
+    "content_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content Sha256"
+    },
+    "extractor": {
+      "title": "Extractor",
+      "type": "string"
+    },
+    "extractor_version": {
+      "default": "1.0.0",
+      "title": "Extractor Version",
+      "type": "string"
+    },
+    "extracted_at": {
+      "format": "date-time",
+      "title": "Extracted At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_type",
+    "source_path",
+    "extractor",
+    "extracted_at"
+  ],
+  "title": "Provenance",
+  "type": "object"
+}

@@ -1,0 +1,301 @@
+{
+  "$defs": {
+    "PathEffect": {
+      "description": "Effect of a change on a network path between components.",
+      "properties": {
+        "kind": {
+          "const": "path",
+          "default": "path",
+          "title": "Kind",
+          "type": "string"
+        },
+        "src": {
+          "title": "Src",
+          "type": "string"
+        },
+        "dst": {
+          "title": "Dst",
+          "type": "string"
+        },
+        "port": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Port"
+        },
+        "protocol": {
+          "default": "TCP",
+          "enum": [
+            "TCP",
+            "UDP",
+            "SCTP"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "before": {
+          "enum": [
+            "allowed",
+            "denied"
+          ],
+          "title": "Before",
+          "type": "string"
+        },
+        "after": {
+          "enum": [
+            "allowed",
+            "denied"
+          ],
+          "title": "After",
+          "type": "string"
+        }
+      },
+      "required": [
+        "src",
+        "dst",
+        "before",
+        "after"
+      ],
+      "title": "PathEffect",
+      "type": "object"
+    },
+    "PermissionEffect": {
+      "description": "Effect of a change on a permission grant.",
+      "properties": {
+        "kind": {
+          "const": "permission",
+          "default": "permission",
+          "title": "Kind",
+          "type": "string"
+        },
+        "principal": {
+          "title": "Principal",
+          "type": "string"
+        },
+        "verb": {
+          "title": "Verb",
+          "type": "string"
+        },
+        "api_group": {
+          "title": "Api Group",
+          "type": "string"
+        },
+        "resource": {
+          "title": "Resource",
+          "type": "string"
+        },
+        "resource_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource Name"
+        },
+        "namespace": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Namespace"
+        },
+        "before": {
+          "enum": [
+            "granted",
+            "denied"
+          ],
+          "title": "Before",
+          "type": "string"
+        },
+        "after": {
+          "enum": [
+            "granted",
+            "denied"
+          ],
+          "title": "After",
+          "type": "string"
+        }
+      },
+      "required": [
+        "principal",
+        "verb",
+        "api_group",
+        "resource",
+        "before",
+        "after"
+      ],
+      "title": "PermissionEffect",
+      "type": "object"
+    },
+    "SecurityObjective": {
+      "description": "The security goal this change is trying to achieve.",
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "restrict_ingress",
+            "restrict_egress",
+            "least_privilege",
+            "remove_wildcard",
+            "custom"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        }
+      },
+      "required": [
+        "description",
+        "kind"
+      ],
+      "title": "SecurityObjective",
+      "type": "object"
+    }
+  },
+  "description": "Complete specification of a proposed security change.\n\nThis is the output of Part 2's change parser and the input to Part 3's analyzer.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "change_id": {
+      "title": "Change Id",
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "iam",
+        "network",
+        "kubernetes"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "k8s_networkpolicy",
+        "k8s_rbac",
+        "tofu_plan"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "operation": {
+      "enum": [
+        "add",
+        "modify",
+        "delete"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "before_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Before Ref"
+    },
+    "after_ref": {
+      "title": "After Ref",
+      "type": "string"
+    },
+    "effects": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/PathEffect"
+          },
+          {
+            "$ref": "#/$defs/PermissionEffect"
+          }
+        ]
+      },
+      "title": "Effects",
+      "type": "array"
+    },
+    "direction": {
+      "default": "neutral",
+      "enum": [
+        "tightens",
+        "loosens",
+        "mixed",
+        "neutral"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "objective": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SecurityObjective"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "supported": {
+      "default": true,
+      "title": "Supported",
+      "type": "boolean"
+    },
+    "parse_warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parse Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "change_id",
+    "category",
+    "kind",
+    "operation",
+    "summary",
+    "after_ref"
+  ],
+  "title": "ChangeSpec",
+  "type": "object"
+}

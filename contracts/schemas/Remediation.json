@@ -1,0 +1,192 @@
+{
+  "$defs": {
+    "ManifestPatch": {
+      "description": "A patch to a manifest file.",
+      "properties": {
+        "target_ref": {
+          "title": "Target Ref",
+          "type": "string"
+        },
+        "format": {
+          "enum": [
+            "yaml",
+            "tofu_json"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_ref",
+        "format",
+        "content"
+      ],
+      "title": "ManifestPatch",
+      "type": "object"
+    },
+    "Minimality": {
+      "description": "Minimality metrics for a remediation.",
+      "properties": {
+        "allowed_pairs": {
+          "title": "Allowed Pairs",
+          "type": "integer"
+        },
+        "required_pairs": {
+          "title": "Required Pairs",
+          "type": "integer"
+        },
+        "excess_pairs": {
+          "title": "Excess Pairs",
+          "type": "integer"
+        },
+        "ratio": {
+          "title": "Ratio",
+          "type": "number"
+        }
+      },
+      "required": [
+        "allowed_pairs",
+        "required_pairs",
+        "excess_pairs",
+        "ratio"
+      ],
+      "title": "Minimality",
+      "type": "object"
+    },
+    "PathSpec": {
+      "description": "Specification of a network path.",
+      "properties": {
+        "src": {
+          "title": "Src",
+          "type": "string"
+        },
+        "dst": {
+          "title": "Dst",
+          "type": "string"
+        },
+        "port": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Port"
+        },
+        "protocol": {
+          "default": "TCP",
+          "title": "Protocol",
+          "type": "string"
+        }
+      },
+      "required": [
+        "src",
+        "dst"
+      ],
+      "title": "PathSpec",
+      "type": "object"
+    },
+    "StaticValidation": {
+      "description": "Static validation results for a remediation.",
+      "properties": {
+        "preserves_required": {
+          "title": "Preserves Required",
+          "type": "boolean"
+        },
+        "keeps_objective": {
+          "title": "Keeps Objective",
+          "type": "boolean"
+        },
+        "introduces_wildcard": {
+          "title": "Introduces Wildcard",
+          "type": "boolean"
+        },
+        "checked_with": {
+          "const": "semantics_engine",
+          "default": "semantics_engine",
+          "title": "Checked With",
+          "type": "string"
+        },
+        "details": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Details",
+          "type": "array"
+        }
+      },
+      "required": [
+        "preserves_required",
+        "keeps_objective",
+        "introduces_wildcard"
+      ],
+      "title": "StaticValidation",
+      "type": "object"
+    }
+  },
+  "description": "A minimal remediation that preserves function while keeping security objective.",
+  "properties": {
+    "remediation_id": {
+      "title": "Remediation Id",
+      "type": "string"
+    },
+    "strategy": {
+      "enum": [
+        "narrow_allow",
+        "scope_down_permission",
+        "retain_required_paths"
+      ],
+      "title": "Strategy",
+      "type": "string"
+    },
+    "patches": {
+      "items": {
+        "$ref": "#/$defs/ManifestPatch"
+      },
+      "title": "Patches",
+      "type": "array"
+    },
+    "preserves": {
+      "items": {
+        "$ref": "#/$defs/PathSpec"
+      },
+      "title": "Preserves",
+      "type": "array"
+    },
+    "keeps_denied": {
+      "items": {
+        "$ref": "#/$defs/PathSpec"
+      },
+      "title": "Keeps Denied",
+      "type": "array"
+    },
+    "static_validation": {
+      "$ref": "#/$defs/StaticValidation"
+    },
+    "minimality": {
+      "$ref": "#/$defs/Minimality"
+    },
+    "rationale": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rationale",
+      "type": "array"
+    }
+  },
+  "required": [
+    "remediation_id",
+    "strategy",
+    "static_validation",
+    "minimality"
+  ],
+  "title": "Remediation",
+  "type": "object"
+}
