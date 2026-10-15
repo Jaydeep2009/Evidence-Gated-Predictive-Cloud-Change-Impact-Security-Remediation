@@ -1,0 +1,29 @@
+{
+  "description": "Minimality metrics for a remediation.",
+  "properties": {
+    "allowed_pairs": {
+      "title": "Allowed Pairs",
+      "type": "integer"
+    },
+    "required_pairs": {
+      "title": "Required Pairs",
+      "type": "integer"
+    },
+    "excess_pairs": {
+      "title": "Excess Pairs",
+      "type": "integer"
+    },
+    "ratio": {
+      "title": "Ratio",
+      "type": "number"
+    }
+  },
+  "required": [
+    "allowed_pairs",
+    "required_pairs",
+    "excess_pairs",
+    "ratio"
+  ],
+  "title": "Minimality",
+  "type": "object"
+}

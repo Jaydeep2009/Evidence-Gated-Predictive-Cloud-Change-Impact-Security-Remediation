@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "change_id": "change-m2-isolate-database",
+  "category": "kubernetes",
+  "kind": "k8s_networkpolicy",
+  "operation": "add",
+  "summary": "Add NetworkPolicy to isolate database from all ingress traffic",
+  "before_ref": null,
+  "after_ref": "kubernetes/policies/isolate-database.yaml",
+  "effects": [
+    {
+      "kind": "path",
+      "src": "component:poc-app/frontend",
+      "dst": "component:poc-app/database",
+      "port": 5432,
+      "protocol": "TCP",
+      "before": "denied",
+      "after": "denied"
+    },
+    {
+      "kind": "path",
+      "src": "component:poc-app/backend",
+      "dst": "component:poc-app/database",
+      "port": 5432,
+      "protocol": "TCP",
+      "before": "allowed",
+      "after": "denied"
+    },
+    {
+      "kind": "path",
+      "src": "component:poc-app/database",
+      "dst": "component:poc-app/frontend",
+      "port": 80,
+      "protocol": "TCP",
+      "before": "allowed",
+      "after": "allowed"
+    },
+    {
+      "kind": "path",
+      "src": "component:poc-app/database",
+      "dst": "component:poc-app/backend",
+      "port": 8000,
+      "protocol": "TCP",
+      "before": "allowed",
+      "after": "allowed"
+    },
+    {
+      "kind": "path",
+      "src": "component:poc-app/frontend",
+      "dst": "component:poc-app/backend",
+      "port": 8000,
+      "protocol": "TCP",
+      "before": "allowed",
+      "after": "allowed"
+    },
+    {
+      "kind": "path",
+      "src": "component:poc-app/backend",
+      "dst": "component:poc-app/frontend",
+      "port": 80,
+      "protocol": "TCP",
+      "before": "allowed",
+      "after": "allowed"
+    }
+  ],
+  "direction": "tightens",
+  "objective": {
+    "description": "Isolate PostgreSQL pods from all ingress traffic to reduce attack surface",
+    "kind": "restrict_ingress",
+    "target": "component:poc-app/database"
+  },
+  "supported": true,
+  "parse_warnings": []
+}

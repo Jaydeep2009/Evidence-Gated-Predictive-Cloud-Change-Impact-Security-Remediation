@@ -1,0 +1,24 @@
+{
+  "description": "Observed state of a component.",
+  "properties": {
+    "ready": {
+      "title": "Ready",
+      "type": "boolean"
+    },
+    "phase": {
+      "title": "Phase",
+      "type": "string"
+    },
+    "restart_count": {
+      "title": "Restart Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "ready",
+    "phase",
+    "restart_count"
+  ],
+  "title": "ComponentState",
+  "type": "object"
+}

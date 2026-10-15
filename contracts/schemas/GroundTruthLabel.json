@@ -1,0 +1,75 @@
+{
+  "description": "Aggregate ground truth label from multiple runs.",
+  "properties": {
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "operational_failure": {
+      "title": "Operational Failure",
+      "type": "boolean"
+    },
+    "affected_components": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Components",
+      "type": "array"
+    },
+    "security_effect": {
+      "enum": [
+        "improves",
+        "neutral",
+        "degrades"
+      ],
+      "title": "Security Effect",
+      "type": "string"
+    },
+    "risky_label": {
+      "title": "Risky Label",
+      "type": "boolean"
+    },
+    "stable": {
+      "title": "Stable",
+      "type": "boolean"
+    },
+    "runs": {
+      "title": "Runs",
+      "type": "integer"
+    },
+    "remediation_restores_function": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Remediation Restores Function"
+    },
+    "remediation_keeps_objective": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Remediation Keeps Objective"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "operational_failure",
+    "security_effect",
+    "risky_label",
+    "stable",
+    "runs"
+  ],
+  "title": "GroundTruthLabel",
+  "type": "object"
+}

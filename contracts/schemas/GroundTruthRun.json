@@ -1,0 +1,198 @@
+{
+  "$defs": {
+    "ComponentState": {
+      "description": "Observed state of a component.",
+      "properties": {
+        "ready": {
+          "title": "Ready",
+          "type": "boolean"
+        },
+        "phase": {
+          "title": "Phase",
+          "type": "string"
+        },
+        "restart_count": {
+          "title": "Restart Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ready",
+        "phase",
+        "restart_count"
+      ],
+      "title": "ComponentState",
+      "type": "object"
+    },
+    "EnvironmentFingerprint": {
+      "description": "Reproducibility fingerprint of the execution environment.",
+      "properties": {
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "kubectl": {
+          "title": "Kubectl",
+          "type": "string"
+        },
+        "tofu": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tofu"
+        },
+        "docker": {
+          "title": "Docker",
+          "type": "string"
+        },
+        "node_image": {
+          "title": "Node Image",
+          "type": "string"
+        },
+        "image_digests": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Image Digests",
+          "type": "object"
+        },
+        "git_sha": {
+          "title": "Git Sha",
+          "type": "string"
+        },
+        "manifests_sha256": {
+          "title": "Manifests Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "kubectl",
+        "docker",
+        "node_image",
+        "git_sha",
+        "manifests_sha256"
+      ],
+      "title": "EnvironmentFingerprint",
+      "type": "object"
+    },
+    "ProbeResult": {
+      "description": "Result from executing a probe.",
+      "properties": {
+        "probe_id": {
+          "title": "Probe Id",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "observed": {
+          "title": "Observed",
+          "type": "string"
+        },
+        "attempts": {
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latency Ms"
+        }
+      },
+      "required": [
+        "probe_id",
+        "passed",
+        "observed",
+        "attempts"
+      ],
+      "title": "ProbeResult",
+      "type": "object"
+    }
+  },
+  "description": "A single ground truth measurement run.",
+  "properties": {
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "run_index": {
+      "title": "Run Index",
+      "type": "integer"
+    },
+    "phase": {
+      "enum": [
+        "baseline",
+        "post_change",
+        "post_remediation",
+        "recovered"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "stable_after_s": {
+      "title": "Stable After S",
+      "type": "number"
+    },
+    "probes": {
+      "items": {
+        "$ref": "#/$defs/ProbeResult"
+      },
+      "title": "Probes",
+      "type": "array"
+    },
+    "components": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ComponentState"
+      },
+      "title": "Components",
+      "type": "object"
+    },
+    "reachability": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Reachability",
+      "type": "object"
+    },
+    "permissions": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Permissions",
+      "type": "object"
+    },
+    "env": {
+      "$ref": "#/$defs/EnvironmentFingerprint"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "run_index",
+    "phase",
+    "started_at",
+    "stable_after_s",
+    "env"
+  ],
+  "title": "GroundTruthRun",
+  "type": "object"
+}

@@ -1,0 +1,41 @@
+{
+  "description": "Result from executing a probe.",
+  "properties": {
+    "probe_id": {
+      "title": "Probe Id",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "observed": {
+      "title": "Observed",
+      "type": "string"
+    },
+    "attempts": {
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "latency_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latency Ms"
+    }
+  },
+  "required": [
+    "probe_id",
+    "passed",
+    "observed",
+    "attempts"
+  ],
+  "title": "ProbeResult",
+  "type": "object"
+}

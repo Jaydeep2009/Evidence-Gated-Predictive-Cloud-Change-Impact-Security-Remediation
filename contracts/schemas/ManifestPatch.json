@@ -1,0 +1,28 @@
+{
+  "description": "A patch to a manifest file.",
+  "properties": {
+    "target_ref": {
+      "title": "Target Ref",
+      "type": "string"
+    },
+    "format": {
+      "enum": [
+        "yaml",
+        "tofu_json"
+      ],
+      "title": "Format",
+      "type": "string"
+    },
+    "content": {
+      "title": "Content",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_ref",
+    "format",
+    "content"
+  ],
+  "title": "ManifestPatch",
+  "type": "object"
+}

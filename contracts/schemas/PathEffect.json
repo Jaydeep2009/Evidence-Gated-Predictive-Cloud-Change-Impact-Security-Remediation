@@ -1,0 +1,65 @@
+{
+  "description": "Effect of a change on a network path between components.",
+  "properties": {
+    "kind": {
+      "const": "path",
+      "default": "path",
+      "title": "Kind",
+      "type": "string"
+    },
+    "src": {
+      "title": "Src",
+      "type": "string"
+    },
+    "dst": {
+      "title": "Dst",
+      "type": "string"
+    },
+    "port": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Port"
+    },
+    "protocol": {
+      "default": "TCP",
+      "enum": [
+        "TCP",
+        "UDP",
+        "SCTP"
+      ],
+      "title": "Protocol",
+      "type": "string"
+    },
+    "before": {
+      "enum": [
+        "allowed",
+        "denied"
+      ],
+      "title": "Before",
+      "type": "string"
+    },
+    "after": {
+      "enum": [
+        "allowed",
+        "denied"
+      ],
+      "title": "After",
+      "type": "string"
+    }
+  },
+  "required": [
+    "src",
+    "dst",
+    "before",
+    "after"
+  ],
+  "title": "PathEffect",
+  "type": "object"
+}

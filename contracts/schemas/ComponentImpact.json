@@ -1,0 +1,50 @@
+{
+  "description": "Predicted impact on a single component.",
+  "properties": {
+    "component": {
+      "title": "Component",
+      "type": "string"
+    },
+    "impact": {
+      "enum": [
+        "unavailable",
+        "degraded",
+        "unaffected"
+      ],
+      "title": "Impact",
+      "type": "string"
+    },
+    "mechanism": {
+      "enum": [
+        "direct_path_blocked",
+        "readiness_coupled",
+        "upstream_cascade",
+        "permission_removed",
+        "none"
+      ],
+      "title": "Mechanism",
+      "type": "string"
+    },
+    "probability": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Probability",
+      "type": "number"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "component",
+    "impact",
+    "mechanism",
+    "probability"
+  ],
+  "title": "ComponentImpact",
+  "type": "object"
+}

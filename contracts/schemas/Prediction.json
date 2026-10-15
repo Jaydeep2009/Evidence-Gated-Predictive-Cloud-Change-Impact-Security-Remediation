@@ -1,0 +1,144 @@
+{
+  "$defs": {
+    "ComponentImpact": {
+      "description": "Predicted impact on a single component.",
+      "properties": {
+        "component": {
+          "title": "Component",
+          "type": "string"
+        },
+        "impact": {
+          "enum": [
+            "unavailable",
+            "degraded",
+            "unaffected"
+          ],
+          "title": "Impact",
+          "type": "string"
+        },
+        "mechanism": {
+          "enum": [
+            "direct_path_blocked",
+            "readiness_coupled",
+            "upstream_cascade",
+            "permission_removed",
+            "none"
+          ],
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "probability": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Probability",
+          "type": "number"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component",
+        "impact",
+        "mechanism",
+        "probability"
+      ],
+      "title": "ComponentImpact",
+      "type": "object"
+    }
+  },
+  "description": "Complete prediction of change impact.\n\nIncludes both security impact and operational risk assessment.",
+  "properties": {
+    "security_impact": {
+      "enum": [
+        "improves",
+        "neutral",
+        "degrades",
+        "unknown"
+      ],
+      "title": "Security Impact",
+      "type": "string"
+    },
+    "security_delta": {
+      "title": "Security Delta",
+      "type": "number"
+    },
+    "operational_risk": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Operational Risk",
+      "type": "number"
+    },
+    "operational_label": {
+      "enum": [
+        "none",
+        "low",
+        "high",
+        "unknown"
+      ],
+      "title": "Operational Label",
+      "type": "string"
+    },
+    "affected_components": {
+      "items": {
+        "$ref": "#/$defs/ComponentImpact"
+      },
+      "title": "Affected Components",
+      "type": "array"
+    },
+    "belief": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Belief",
+      "type": "number"
+    },
+    "sufficiency": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Sufficiency",
+      "type": "number"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "supporting_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supporting Evidence Ids",
+      "type": "array"
+    },
+    "contradicting_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contradicting Evidence Ids",
+      "type": "array"
+    },
+    "rationale": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rationale",
+      "type": "array"
+    }
+  },
+  "required": [
+    "security_impact",
+    "security_delta",
+    "operational_risk",
+    "operational_label",
+    "belief",
+    "sufficiency",
+    "confidence"
+  ],
+  "title": "Prediction",
+  "type": "object"
+}

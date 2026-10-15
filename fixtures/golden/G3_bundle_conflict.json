@@ -1,0 +1,261 @@
+{
+  "schema_version": "1.0",
+  "bundle_id": "bundle-baseline-m2-conflict",
+  "snapshot_id": "baseline@m2",
+  "phase": "pre_change",
+  "collected_at": "2026-10-11T13:21:00Z",
+  "config_fingerprint": "a1b2c3d4e5f6",
+  "inventory": [
+    {
+      "node_id": "component:poc-app/frontend",
+      "labels": {"app": "frontend", "tier": "presentation"},
+      "aliases": ["frontend-deployment", "frontend-service", "frontend-service.poc-app", "frontend-service.poc-app.svc", "frontend-service.poc-app.svc.cluster.local", "frontend"],
+      "namespace": "poc-app",
+      "ports": [80],
+      "readiness_path": null
+    },
+    {
+      "node_id": "component:poc-app/backend",
+      "labels": {"app": "backend", "tier": "application"},
+      "aliases": ["backend-deployment", "backend-service", "backend-service.poc-app", "backend-service.poc-app.svc", "backend-service.poc-app.svc.cluster.local", "backend"],
+      "namespace": "poc-app",
+      "ports": [8000],
+      "readiness_path": "/health"
+    },
+    {
+      "node_id": "component:poc-app/database",
+      "labels": {"app": "database", "tier": "data"},
+      "aliases": ["database-deployment", "database-service", "database-service.poc-app", "database-service.poc-app.svc", "database-service.poc-app.svc.cluster.local", "database"],
+      "namespace": "poc-app",
+      "ports": [5432],
+      "readiness_path": null
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E-infra-001",
+      "evidence_type": "infrastructure",
+      "source": "kubernetes-deployment",
+      "subject": "component:poc-app/backend",
+      "relationship": "CONFIGURED_BY",
+      "object": "config:poc-app/Deployment/backend-deployment#env.DATABASE_HOST",
+      "polarity": "supports",
+      "classification": "observed",
+      "confidence": 1.0,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "cluster",
+        "source_path": "kubernetes/backend/deployment.yaml",
+        "line_number": 34,
+        "locator": "spec.template.spec.containers[0].env[0]",
+        "content_sha256": null,
+        "extractor": "infra.deployment",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {"key": "DATABASE_HOST", "value": "database-service"}
+    },
+    {
+      "evidence_id": "E-infra-002",
+      "evidence_type": "infrastructure",
+      "source": "kubernetes-deployment-env",
+      "subject": "component:poc-app/backend",
+      "relationship": "DEPENDS_ON",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "inferred",
+      "confidence": 0.5,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "cluster",
+        "source_path": "kubernetes/backend/deployment.yaml",
+        "line_number": 35,
+        "locator": "spec.template.spec.containers[0].env[0].value",
+        "content_sha256": null,
+        "extractor": "infra.deployment",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {"key": "env:DATABASE_HOST", "resolved_to": "database-service", "port": 5432}
+    },
+    {
+      "evidence_id": "E-infra-003",
+      "evidence_type": "infrastructure",
+      "source": "kubernetes-service",
+      "subject": "k8s-service:poc-app/backend-service",
+      "relationship": "EXPOSES",
+      "object": "component:poc-app/backend",
+      "polarity": "supports",
+      "classification": "observed",
+      "confidence": 1.0,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "cluster",
+        "source_path": "kubernetes/backend/service.yaml",
+        "line_number": 12,
+        "locator": "spec.selector",
+        "content_sha256": null,
+        "extractor": "infra.service",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {"port": 8000, "targetPort": 8000}
+    },
+    {
+      "evidence_id": "E-infra-004",
+      "evidence_type": "infrastructure",
+      "source": "kubernetes-service",
+      "subject": "k8s-service:poc-app/database-service",
+      "relationship": "EXPOSES",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "observed",
+      "confidence": 1.0,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "cluster",
+        "source_path": "kubernetes/database/service.yaml",
+        "line_number": 12,
+        "locator": "spec.selector",
+        "content_sha256": null,
+        "extractor": "infra.service",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {"port": 5432, "targetPort": 5432}
+    },
+    {
+      "evidence_id": "E-infra-conflict",
+      "evidence_type": "infrastructure",
+      "source": "kubernetes-networkpolicy",
+      "subject": "component:poc-app/backend",
+      "relationship": "DENIES",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "observed",
+      "confidence": 1.0,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "cluster",
+        "source_path": "kubernetes/policies/drift-policy.yaml",
+        "line_number": 10,
+        "locator": "spec.ingress",
+        "content_sha256": null,
+        "extractor": "infra.networkpolicy",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {"port": 5432, "policy_names": ["drift-policy"], "config_drift": true}
+    },
+    {
+      "evidence_id": "E-app-001",
+      "evidence_type": "application",
+      "source": "python-ast",
+      "subject": "component:poc-app/backend",
+      "relationship": "DEPENDS_ON",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "inferred",
+      "confidence": 0.85,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "file",
+        "source_path": "services/backend/app/main.py",
+        "line_number": 41,
+        "locator": "psycopg2.connect",
+        "content_sha256": null,
+        "extractor": "app.python_ast",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {
+        "sink": "psycopg2.connect",
+        "env_key": "DATABASE_HOST",
+        "resolved_via": "env+manifest",
+        "port": 5432
+      }
+    },
+    {
+      "evidence_id": "E-app-002",
+      "evidence_type": "application",
+      "source": "python-ast-readiness",
+      "subject": "component:poc-app/backend",
+      "relationship": "READINESS_COUPLED",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "inferred",
+      "confidence": 0.85,
+      "observed_at": "2026-10-11T13:20:00Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "file",
+        "source_path": "services/backend/app/main.py",
+        "line_number": 19,
+        "locator": "@app.get('/health')",
+        "content_sha256": null,
+        "extractor": "app.python_ast",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:20:00Z"
+      },
+      "metadata": {
+        "readiness_path": "/health",
+        "calls_sink_at_line": 41,
+        "call_depth": 1
+      }
+    },
+    {
+      "evidence_id": "E-runtime-001",
+      "evidence_type": "runtime",
+      "source": "verification-probe",
+      "subject": "component:poc-app/backend",
+      "relationship": "CONNECTS_TO",
+      "object": "component:poc-app/database",
+      "polarity": "supports",
+      "classification": "verified",
+      "confidence": 1.0,
+      "observed_at": "2026-10-11T13:21:30Z",
+      "snapshot_id": "baseline@m2",
+      "provenance": {
+        "source_type": "probe",
+        "source_path": "network-policy-verification-20261011-132130.json",
+        "line_number": 0,
+        "locator": "observed_behavior.backend_to_database",
+        "content_sha256": null,
+        "extractor": "runtime.verification",
+        "extractor_version": "1.0.0",
+        "extracted_at": "2026-10-11T13:21:30Z"
+      },
+      "metadata": {
+        "socket_code": 0,
+        "status": "connected",
+        "port": 5432,
+        "conflicts_with": ["E-infra-conflict"]
+      }
+    }
+  ],
+  "coverage": {
+    "window_start": "2026-10-11T13:21:00Z",
+    "window_end": "2026-10-11T13:21:30Z",
+    "workload_id": "baseline-verification",
+    "requests_total": 3,
+    "endpoints_exercised": ["backend:GET /health", "backend:GET /live", "backend:GET /"],
+    "endpoints_known": ["backend:GET /health", "backend:GET /live", "backend:GET /"],
+    "components_observed": ["component:poc-app/frontend", "component:poc-app/backend", "component:poc-app/database"],
+    "spans_total": 0
+  },
+  "static_completeness": [
+    {
+      "component": "component:poc-app/backend",
+      "files_analyzed": ["services/backend/app/main.py"],
+      "parse_errors": [],
+      "unresolved_dynamic_calls": 0
+    }
+  ],
+  "warnings": ["Configuration drift detected: policy says DENIES but runtime shows CONNECTS_TO for backend→database"]
+}
