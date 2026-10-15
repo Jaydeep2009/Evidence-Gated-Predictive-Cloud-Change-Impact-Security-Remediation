@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, feature/*, fix/* ]
+    branches: [ main ]  # Only run on pushes to main (after PR merge)
   pull_request:
-    branches: [ main ]
+    branches: [ main ]  # Run on all PRs to main
 
 jobs:
   lint:
@@ -27,6 +27,12 @@ jobs:
         
       - name: Run mypy on contracts
         run: mypy --strict src/evgate/contracts/
+        
+      - name: Run mypy on graph
+        run: mypy --strict src/evgate/graph/
+        
+      - name: Run mypy on prediction
+        run: mypy --strict src/evgate/prediction/
         
       - name: Check formatting with black
         run: black --check src/ tests/

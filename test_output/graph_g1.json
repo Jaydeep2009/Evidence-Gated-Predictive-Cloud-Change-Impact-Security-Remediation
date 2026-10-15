@@ -1,0 +1,210 @@
+{
+  "directed": true,
+  "multigraph": true,
+  "graph": {},
+  "nodes": [
+    {
+      "kind": "component",
+      "namespace": "poc-app",
+      "labels": {
+        "app": "frontend",
+        "tier": "presentation"
+      },
+      "id": "component:poc-app/frontend"
+    },
+    {
+      "kind": "component",
+      "namespace": "poc-app",
+      "labels": {
+        "app": "backend",
+        "tier": "application"
+      },
+      "id": "component:poc-app/backend"
+    },
+    {
+      "kind": "component",
+      "namespace": "poc-app",
+      "labels": {
+        "app": "database",
+        "tier": "data"
+      },
+      "id": "component:poc-app/database"
+    },
+    {
+      "kind": "config",
+      "namespace": null,
+      "labels": {},
+      "id": "config:poc-app/Deployment/backend-deployment#env.DATABASE_HOST"
+    },
+    {
+      "kind": "k8s-service",
+      "namespace": null,
+      "labels": {},
+      "id": "k8s-service:poc-app/backend-service"
+    },
+    {
+      "kind": "k8s-service",
+      "namespace": null,
+      "labels": {},
+      "id": "k8s-service:poc-app/database-service"
+    }
+  ],
+  "edges": [
+    {
+      "evidence_ids": [
+        "E-infra-001"
+      ],
+      "by_type": {
+        "infrastructure": [
+          "E-infra-001"
+        ]
+      },
+      "conf_by_type": {
+        "infrastructure": 1.0
+      },
+      "polarity_counts": {
+        "supports": 1
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "kubernetes-deployment"
+      ],
+      "relationship": "CONFIGURED_BY",
+      "source": "component:poc-app/backend",
+      "target": "config:poc-app/Deployment/backend-deployment#env.DATABASE_HOST",
+      "key": "CONFIGURED_BY"
+    },
+    {
+      "evidence_ids": [
+        "E-infra-002",
+        "E-app-001"
+      ],
+      "by_type": {
+        "infrastructure": [
+          "E-infra-002"
+        ],
+        "application": [
+          "E-app-001"
+        ]
+      },
+      "conf_by_type": {
+        "infrastructure": 0.5,
+        "application": 0.85
+      },
+      "polarity_counts": {
+        "supports": 2
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "kubernetes-deployment-env",
+        "python-ast"
+      ],
+      "relationship": "DEPENDS_ON",
+      "source": "component:poc-app/backend",
+      "target": "component:poc-app/database",
+      "key": "DEPENDS_ON"
+    },
+    {
+      "evidence_ids": [
+        "E-app-002"
+      ],
+      "by_type": {
+        "application": [
+          "E-app-002"
+        ]
+      },
+      "conf_by_type": {
+        "application": 0.85
+      },
+      "polarity_counts": {
+        "supports": 1
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "python-ast-readiness"
+      ],
+      "relationship": "READINESS_COUPLED",
+      "source": "component:poc-app/backend",
+      "target": "component:poc-app/database",
+      "key": "READINESS_COUPLED"
+    },
+    {
+      "evidence_ids": [
+        "E-runtime-001"
+      ],
+      "by_type": {
+        "runtime": [
+          "E-runtime-001"
+        ]
+      },
+      "conf_by_type": {
+        "runtime": 1.0
+      },
+      "polarity_counts": {
+        "supports": 1
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "verification-probe"
+      ],
+      "relationship": "CONNECTS_TO",
+      "source": "component:poc-app/backend",
+      "target": "component:poc-app/database",
+      "key": "CONNECTS_TO"
+    },
+    {
+      "evidence_ids": [
+        "E-infra-003"
+      ],
+      "by_type": {
+        "infrastructure": [
+          "E-infra-003"
+        ]
+      },
+      "conf_by_type": {
+        "infrastructure": 1.0
+      },
+      "polarity_counts": {
+        "supports": 1
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "kubernetes-service"
+      ],
+      "relationship": "EXPOSES",
+      "source": "k8s-service:poc-app/backend-service",
+      "target": "component:poc-app/backend",
+      "key": "EXPOSES"
+    },
+    {
+      "evidence_ids": [
+        "E-infra-004"
+      ],
+      "by_type": {
+        "infrastructure": [
+          "E-infra-004"
+        ]
+      },
+      "conf_by_type": {
+        "infrastructure": 1.0
+      },
+      "polarity_counts": {
+        "supports": 1
+      },
+      "conflicted": false,
+      "snapshot_id": "baseline@m2",
+      "sources": [
+        "kubernetes-service"
+      ],
+      "relationship": "EXPOSES",
+      "source": "k8s-service:poc-app/database-service",
+      "target": "component:poc-app/database",
+      "key": "EXPOSES"
+    }
+  ]
+}
