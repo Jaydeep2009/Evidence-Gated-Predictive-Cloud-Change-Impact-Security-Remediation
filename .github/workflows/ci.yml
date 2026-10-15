@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, feature/*, fix/* ]
+    branches: [ main ]  # Only run on pushes to main (after PR merge)
   pull_request:
-    branches: [ main ]
+    branches: [ main ]  # Run on all PRs to main
 
 jobs:
   lint:
