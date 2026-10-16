@@ -1,7 +1,7 @@
 """Prediction module for evidence-gated system.
 
-This module implements the belief, sufficiency, confidence calculations
-and operational propagation per implementation.md §8.2 and §8.3.
+This module implements the belief, sufficiency, confidence calculations,
+operational propagation, and security impact analysis per §8.2 and §8.3.
 """
 
 from __future__ import annotations
@@ -30,6 +30,15 @@ from .propagate import (
     propagate_operational_impact,
     tightens_access,
 )
+from .security import (
+    SecurityImpact,
+    compute_exposure_delta,
+    compute_path_exposure,
+    compute_permission_delta,
+    compute_security_impact,
+    get_permission_weight,
+    is_sensitive_component,
+)
 
 __all__ = [
     # Belief/sufficiency
@@ -53,4 +62,12 @@ __all__ = [
     "propagate_cascades",
     "propagate_operational_impact",
     "tightens_access",
+    # Security
+    "SecurityImpact",
+    "compute_exposure_delta",
+    "compute_path_exposure",
+    "compute_permission_delta",
+    "compute_security_impact",
+    "get_permission_weight",
+    "is_sensitive_component",
 ]
