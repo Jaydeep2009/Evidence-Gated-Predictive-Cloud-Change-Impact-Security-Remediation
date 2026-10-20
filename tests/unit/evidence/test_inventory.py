@@ -93,7 +93,9 @@ def test_component_namespace_is_poc_app() -> None:
 def test_backend_labels() -> None:
     """backend labels contain app=backend and tier=application."""
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     assert backend.labels.get("app") == "backend"
     assert backend.labels.get("tier") == "application"
 
@@ -124,7 +126,9 @@ def test_frontend_labels() -> None:
 @pytest.mark.unit
 def test_backend_port_8000() -> None:
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     assert 8000 in backend.ports
 
 
@@ -151,7 +155,9 @@ def test_database_port_5432() -> None:
 def test_backend_readiness_path() -> None:
     """backend readiness path is /health (httpGet)."""
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     assert backend.readiness_path == "/health"
 
 
@@ -188,7 +194,9 @@ def test_database_readiness_path_none() -> None:
 def test_backend_deployment_name_alias() -> None:
     """backend-deployment is an alias for component:poc-app/backend."""
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     assert "backend-deployment" in backend.aliases
 
 
@@ -240,7 +248,9 @@ def test_database_service_alias_fqdn() -> None:
 def test_backend_service_all_four_dns_forms() -> None:
     """All four DNS forms are registered for backend-service."""
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     for form in [
         "backend-service",
         "backend-service.poc-app",
@@ -266,7 +276,9 @@ def test_app_label_alias_database() -> None:
 @pytest.mark.unit
 def test_app_label_alias_backend() -> None:
     inv = build_inventory(K8S_DIR)
-    backend = next(c for c in inv.components if c.node_id == "component:poc-app/backend")
+    backend = next(
+        c for c in inv.components if c.node_id == "component:poc-app/backend"
+    )
     assert "backend" in backend.aliases
 
 
@@ -593,9 +605,9 @@ def test_no_duplicate_aliases_per_component() -> None:
     """Each component's alias list has no duplicates."""
     inv = build_inventory(K8S_DIR)
     for comp in inv.components:
-        assert len(comp.aliases) == len(set(comp.aliases)), (
-            f"Duplicate aliases on {comp.node_id}: {comp.aliases}"
-        )
+        assert len(comp.aliases) == len(
+            set(comp.aliases)
+        ), f"Duplicate aliases on {comp.node_id}: {comp.aliases}"
 
 
 @pytest.mark.unit
@@ -669,9 +681,9 @@ def test_g1_fixture_inventory_ports_match() -> None:
     actual_by_id = {c.node_id: c for c in inv.components}
     for expected in g1["inventory"]:
         node_id = expected["node_id"]
-        assert sorted(actual_by_id[node_id].ports) == sorted(expected["ports"]), (
-            f"Port mismatch for {node_id}"
-        )
+        assert sorted(actual_by_id[node_id].ports) == sorted(
+            expected["ports"]
+        ), f"Port mismatch for {node_id}"
 
 
 @pytest.mark.unit
@@ -696,9 +708,9 @@ def test_g1_fixture_inventory_readiness_paths_match() -> None:
         node_id = expected["node_id"]
         if node_id in known_deviations:
             continue
-        assert actual_by_id[node_id].readiness_path == expected.get("readiness_path"), (
-            f"readiness_path mismatch for {node_id}"
-        )
+        assert actual_by_id[node_id].readiness_path == expected.get(
+            "readiness_path"
+        ), f"readiness_path mismatch for {node_id}"
 
 
 @pytest.mark.unit
@@ -710,6 +722,6 @@ def test_g1_fixture_inventory_labels_match() -> None:
     actual_by_id = {c.node_id: c for c in inv.components}
     for expected in g1["inventory"]:
         node_id = expected["node_id"]
-        assert actual_by_id[node_id].labels == expected.get("labels", {}), (
-            f"Labels mismatch for {node_id}"
-        )
+        assert actual_by_id[node_id].labels == expected.get(
+            "labels", {}
+        ), f"Labels mismatch for {node_id}"

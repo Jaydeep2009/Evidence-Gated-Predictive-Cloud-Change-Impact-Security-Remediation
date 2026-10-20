@@ -336,9 +336,7 @@ def build_inventory(
             logger.warning(msg)
 
     # Sort components deterministically by node_id for reproducibility (§10).
-    sorted_components = sorted(
-        raw_components.values(), key=lambda c: c.node_id
-    )
+    sorted_components = sorted(raw_components.values(), key=lambda c: c.node_id)
 
     return ComponentInventory(
         components=sorted_components,
