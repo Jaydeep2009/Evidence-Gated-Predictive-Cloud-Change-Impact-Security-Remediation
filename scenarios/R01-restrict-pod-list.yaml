@@ -1,0 +1,36 @@
+# Scenario R01: Restrict Pod List Permission
+# Category: RBAC
+
+id: R01
+name: Restrict Pod List Permission
+category: rbac
+description: |
+  Remove pod list permission from backend service account.
+  If backend needs to list pods, this will cause permission errors.
+
+change_type: policy
+before_config:
+  rbac:
+    - service_account: backend-sa
+      permissions: ["get", "list", "watch pods"]
+
+after_config:
+  rbac:
+    - service_account: backend-sa
+      permissions: ["get pods"]  # removed list and watch
+
+expected_impacts:
+  - "Backend cannot list pods"
+  - "Permission denied errors in logs"
+  - "Features requiring pod discovery fail"
+
+expected_behavior: medium_impact
+
+probes:
+  - url: "http://localhost:30080/health"
+    method: GET
+    expected_status: 200
+    timeout: 10
+
+policy_files:
+  - kubernetes/policies/backend-role-restricted.yaml

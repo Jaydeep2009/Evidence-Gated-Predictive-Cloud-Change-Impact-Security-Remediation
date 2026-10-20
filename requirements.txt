@@ -1,0 +1,17 @@
+# Part 4: Scenarios, Remediation, Ground Truth, and Evaluation
+# Python dependencies
+
+# Data validation and parsing
+pydantic>=2.0.0
+PyYAML>=6.0
+
+# HTTP requests for probes
+requests>=2.31.0
+
+# Scientific computing and statistics
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Optional: for future visualization
+# matplotlib>=3.7.0
+# seaborn>=0.12.0

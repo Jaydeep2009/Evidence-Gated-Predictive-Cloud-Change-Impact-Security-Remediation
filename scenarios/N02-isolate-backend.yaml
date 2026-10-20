@@ -1,0 +1,35 @@
+# Scenario N02: Isolate Backend
+# Category: Network
+
+id: N02
+name: Isolate Backend Service
+category: network
+description: |
+  Apply NetworkPolicy that blocks frontend→backend traffic.
+  This should prevent frontend from reaching backend API.
+
+change_type: policy
+before_config:
+  network_policies: []
+  connectivity: "frontend → backend → database (all working)"
+
+after_config:
+  network_policies:
+    - name: isolate-backend
+      spec: "deny all ingress to backend pods"
+
+expected_impacts:
+  - "Frontend cannot reach backend"
+  - "API requests timeout or fail"
+  - "User sees connection error in browser"
+
+expected_behavior: high_impact
+
+probes:
+  - url: "http://localhost:30080"
+    method: GET
+    expected_status: 502
+    timeout: 10
+
+policy_files:
+  - kubernetes/policies/isolate-backend.yaml
