@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "Decision": {
+      "description": "Evidence gate decision outcomes.",
+      "enum": [
+        "SAFE",
+        "RISKY",
+        "INSUFFICIENT_EVIDENCE"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "EvidenceRequest": {
+      "description": "A request for additional evidence to improve decision confidence.",
+      "properties": {
+        "action": {
+          "enum": [
+            "run_workload",
+            "exercise_endpoint",
+            "provide_source",
+            "refresh_snapshot",
+            "resolve_conflict"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "target",
+        "why"
+      ],
+      "title": "EvidenceRequest",
+      "type": "object"
+    }
+  },
+  "description": "Evidence gate decision with reasoning.",
+  "properties": {
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "thresholds_used": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Thresholds Used",
+      "type": "object"
+    },
+    "evidence_requests": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRequest"
+      },
+      "title": "Evidence Requests",
+      "type": "array"
+    }
+  },
+  "required": [
+    "decision"
+  ],
+  "title": "GateDecision",
+  "type": "object"
+}

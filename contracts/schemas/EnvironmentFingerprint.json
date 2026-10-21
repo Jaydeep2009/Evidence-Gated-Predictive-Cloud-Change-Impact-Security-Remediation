@@ -1,0 +1,58 @@
+{
+  "description": "Reproducibility fingerprint of the execution environment.",
+  "properties": {
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "kubectl": {
+      "title": "Kubectl",
+      "type": "string"
+    },
+    "tofu": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tofu"
+    },
+    "docker": {
+      "title": "Docker",
+      "type": "string"
+    },
+    "node_image": {
+      "title": "Node Image",
+      "type": "string"
+    },
+    "image_digests": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Image Digests",
+      "type": "object"
+    },
+    "git_sha": {
+      "title": "Git Sha",
+      "type": "string"
+    },
+    "manifests_sha256": {
+      "title": "Manifests Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "kubectl",
+    "docker",
+    "node_image",
+    "git_sha",
+    "manifests_sha256"
+  ],
+  "title": "EnvironmentFingerprint",
+  "type": "object"
+}

@@ -1,0 +1,15 @@
+{
+  "scenario_id": "M2-isolate-database",
+  "operational_failure": true,
+  "affected_components": [
+    "component:poc-app/backend",
+    "component:poc-app/database",
+    "component:poc-app/frontend"
+  ],
+  "security_effect": "improves",
+  "risky_label": true,
+  "stable": true,
+  "runs": 3,
+  "remediation_restores_function": null,
+  "remediation_keeps_objective": null
+}

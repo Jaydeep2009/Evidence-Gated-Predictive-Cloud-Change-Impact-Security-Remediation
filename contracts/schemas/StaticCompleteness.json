@@ -1,0 +1,33 @@
+{
+  "description": "How trustworthy 'no call found in code' is for one component.\n\nUsed to assess whether absence of application evidence is informative.",
+  "properties": {
+    "component": {
+      "title": "Component",
+      "type": "string"
+    },
+    "files_analyzed": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Files Analyzed",
+      "type": "array"
+    },
+    "parse_errors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parse Errors",
+      "type": "array"
+    },
+    "unresolved_dynamic_calls": {
+      "default": 0,
+      "title": "Unresolved Dynamic Calls",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "component"
+  ],
+  "title": "StaticCompleteness",
+  "type": "object"
+}

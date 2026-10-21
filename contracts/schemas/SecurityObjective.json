@@ -1,0 +1,38 @@
+{
+  "description": "The security goal this change is trying to achieve.",
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "restrict_ingress",
+        "restrict_egress",
+        "least_privilege",
+        "remove_wildcard",
+        "custom"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "target": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target"
+    }
+  },
+  "required": [
+    "description",
+    "kind"
+  ],
+  "title": "SecurityObjective",
+  "type": "object"
+}

@@ -1,0 +1,483 @@
+{
+  "$defs": {
+    "ComponentImpact": {
+      "description": "Predicted impact on a single component.",
+      "properties": {
+        "component": {
+          "title": "Component",
+          "type": "string"
+        },
+        "impact": {
+          "enum": [
+            "unavailable",
+            "degraded",
+            "unaffected"
+          ],
+          "title": "Impact",
+          "type": "string"
+        },
+        "mechanism": {
+          "enum": [
+            "direct_path_blocked",
+            "readiness_coupled",
+            "upstream_cascade",
+            "permission_removed",
+            "none"
+          ],
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "probability": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Probability",
+          "type": "number"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component",
+        "impact",
+        "mechanism",
+        "probability"
+      ],
+      "title": "ComponentImpact",
+      "type": "object"
+    },
+    "Decision": {
+      "description": "Evidence gate decision outcomes.",
+      "enum": [
+        "SAFE",
+        "RISKY",
+        "INSUFFICIENT_EVIDENCE"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "EvidenceRequest": {
+      "description": "A request for additional evidence to improve decision confidence.",
+      "properties": {
+        "action": {
+          "enum": [
+            "run_workload",
+            "exercise_endpoint",
+            "provide_source",
+            "refresh_snapshot",
+            "resolve_conflict"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "target",
+        "why"
+      ],
+      "title": "EvidenceRequest",
+      "type": "object"
+    },
+    "GateDecision": {
+      "description": "Evidence gate decision with reasoning.",
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "thresholds_used": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Thresholds Used",
+          "type": "object"
+        },
+        "evidence_requests": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRequest"
+          },
+          "title": "Evidence Requests",
+          "type": "array"
+        }
+      },
+      "required": [
+        "decision"
+      ],
+      "title": "GateDecision",
+      "type": "object"
+    },
+    "ManifestPatch": {
+      "description": "A patch to a manifest file.",
+      "properties": {
+        "target_ref": {
+          "title": "Target Ref",
+          "type": "string"
+        },
+        "format": {
+          "enum": [
+            "yaml",
+            "tofu_json"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_ref",
+        "format",
+        "content"
+      ],
+      "title": "ManifestPatch",
+      "type": "object"
+    },
+    "Minimality": {
+      "description": "Minimality metrics for a remediation.",
+      "properties": {
+        "allowed_pairs": {
+          "title": "Allowed Pairs",
+          "type": "integer"
+        },
+        "required_pairs": {
+          "title": "Required Pairs",
+          "type": "integer"
+        },
+        "excess_pairs": {
+          "title": "Excess Pairs",
+          "type": "integer"
+        },
+        "ratio": {
+          "title": "Ratio",
+          "type": "number"
+        }
+      },
+      "required": [
+        "allowed_pairs",
+        "required_pairs",
+        "excess_pairs",
+        "ratio"
+      ],
+      "title": "Minimality",
+      "type": "object"
+    },
+    "PathSpec": {
+      "description": "Specification of a network path.",
+      "properties": {
+        "src": {
+          "title": "Src",
+          "type": "string"
+        },
+        "dst": {
+          "title": "Dst",
+          "type": "string"
+        },
+        "port": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Port"
+        },
+        "protocol": {
+          "default": "TCP",
+          "title": "Protocol",
+          "type": "string"
+        }
+      },
+      "required": [
+        "src",
+        "dst"
+      ],
+      "title": "PathSpec",
+      "type": "object"
+    },
+    "Prediction": {
+      "description": "Complete prediction of change impact.\n\nIncludes both security impact and operational risk assessment.",
+      "properties": {
+        "security_impact": {
+          "enum": [
+            "improves",
+            "neutral",
+            "degrades",
+            "unknown"
+          ],
+          "title": "Security Impact",
+          "type": "string"
+        },
+        "security_delta": {
+          "title": "Security Delta",
+          "type": "number"
+        },
+        "operational_risk": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Operational Risk",
+          "type": "number"
+        },
+        "operational_label": {
+          "enum": [
+            "none",
+            "low",
+            "high",
+            "unknown"
+          ],
+          "title": "Operational Label",
+          "type": "string"
+        },
+        "affected_components": {
+          "items": {
+            "$ref": "#/$defs/ComponentImpact"
+          },
+          "title": "Affected Components",
+          "type": "array"
+        },
+        "belief": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Belief",
+          "type": "number"
+        },
+        "sufficiency": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Sufficiency",
+          "type": "number"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        },
+        "contradicting_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contradicting Evidence Ids",
+          "type": "array"
+        },
+        "rationale": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rationale",
+          "type": "array"
+        }
+      },
+      "required": [
+        "security_impact",
+        "security_delta",
+        "operational_risk",
+        "operational_label",
+        "belief",
+        "sufficiency",
+        "confidence"
+      ],
+      "title": "Prediction",
+      "type": "object"
+    },
+    "Remediation": {
+      "description": "A minimal remediation that preserves function while keeping security objective.",
+      "properties": {
+        "remediation_id": {
+          "title": "Remediation Id",
+          "type": "string"
+        },
+        "strategy": {
+          "enum": [
+            "narrow_allow",
+            "scope_down_permission",
+            "retain_required_paths"
+          ],
+          "title": "Strategy",
+          "type": "string"
+        },
+        "patches": {
+          "items": {
+            "$ref": "#/$defs/ManifestPatch"
+          },
+          "title": "Patches",
+          "type": "array"
+        },
+        "preserves": {
+          "items": {
+            "$ref": "#/$defs/PathSpec"
+          },
+          "title": "Preserves",
+          "type": "array"
+        },
+        "keeps_denied": {
+          "items": {
+            "$ref": "#/$defs/PathSpec"
+          },
+          "title": "Keeps Denied",
+          "type": "array"
+        },
+        "static_validation": {
+          "$ref": "#/$defs/StaticValidation"
+        },
+        "minimality": {
+          "$ref": "#/$defs/Minimality"
+        },
+        "rationale": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rationale",
+          "type": "array"
+        }
+      },
+      "required": [
+        "remediation_id",
+        "strategy",
+        "static_validation",
+        "minimality"
+      ],
+      "title": "Remediation",
+      "type": "object"
+    },
+    "StaticValidation": {
+      "description": "Static validation results for a remediation.",
+      "properties": {
+        "preserves_required": {
+          "title": "Preserves Required",
+          "type": "boolean"
+        },
+        "keeps_objective": {
+          "title": "Keeps Objective",
+          "type": "boolean"
+        },
+        "introduces_wildcard": {
+          "title": "Introduces Wildcard",
+          "type": "boolean"
+        },
+        "checked_with": {
+          "const": "semantics_engine",
+          "default": "semantics_engine",
+          "title": "Checked With",
+          "type": "string"
+        },
+        "details": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Details",
+          "type": "array"
+        }
+      },
+      "required": [
+        "preserves_required",
+        "keeps_objective",
+        "introduces_wildcard"
+      ],
+      "title": "StaticValidation",
+      "type": "object"
+    }
+  },
+  "description": "Complete analysis result including prediction, gate decision, and optional remediation.\n\nThis is the primary output of the analyze() pipeline.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "change_id": {
+      "title": "Change Id",
+      "type": "string"
+    },
+    "evidence_config": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "D_NOGATE"
+      ],
+      "title": "Evidence Config",
+      "type": "string"
+    },
+    "gate_enabled": {
+      "title": "Gate Enabled",
+      "type": "boolean"
+    },
+    "prediction": {
+      "$ref": "#/$defs/Prediction"
+    },
+    "gate": {
+      "$ref": "#/$defs/GateDecision"
+    },
+    "graph_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Graph Ref"
+    },
+    "remediation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Remediation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Versions",
+      "type": "object"
+    }
+  },
+  "required": [
+    "change_id",
+    "evidence_config",
+    "gate_enabled",
+    "prediction",
+    "gate"
+  ],
+  "title": "AnalysisResult",
+  "type": "object"
+}

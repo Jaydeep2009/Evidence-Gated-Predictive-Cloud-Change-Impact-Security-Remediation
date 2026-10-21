@@ -1,0 +1,2228 @@
+I am a final-year engineering student working on my major/final-year research project.
+
+PROJECT TITLE:
+“Evidence-Gated Predictive Cloud Change Impact & Security Remediation”
+
+Please treat everything below as the established context for this project. Do not unnecessarily redesign the project, change its research direction, add random technologies, or expand the scope unless I explicitly ask.
+
+============================================================
+1. PROJECT OBJECTIVE
+============================================================
+
+The project is a research-oriented, open-source, locally reproducible system that predicts the security and operational impact of proposed cloud/infrastructure security changes BEFORE they are applied.
+
+The main problem is:
+
+Cloud/security changes can improve security but can unintentionally break applications or services.
+
+Dependency information is distributed across:
+1. Infrastructure configuration
+2. Application/source-code information
+3. Runtime behavior/telemetry
+
+A security change should therefore not be judged only from infrastructure configuration.
+
+The system should combine:
+
+Infrastructure Evidence
++
+Application Evidence
++
+Runtime Evidence
+
+to construct a Unified Evidence/Dependency Graph and use that evidence to predict:
+
+- Security impact
+- Operational risk
+- Affected components
+- Confidence
+- Supporting evidence/reasoning
+
+The system must also be able to recognize when there is NOT enough evidence.
+
+Therefore, the decision layer must support:
+
+SAFE
+RISKY
+INSUFFICIENT EVIDENCE
+
+When a change is risky, the system should attempt a minimal safe remediation when appropriate, then perform controlled verification and compare:
+
+Prediction vs Actual Runtime Result.
+
+The overall research story is:
+
+Proposed Cloud/Security Change
+→ Change Parser
+→ Infrastructure Evidence
++ Application Evidence
++ Runtime Evidence
+→ Unified Evidence/Dependency Graph
+→ Impact Prediction
+→ Security Impact
++ Operational Risk
++ Affected Components
++ Confidence
+→ Evidence Gate
+→ SAFE / RISKY / INSUFFICIENT EVIDENCE
+→ Minimal Safe Remediation when appropriate
+→ Controlled Verification
+→ Actual Runtime Result
+→ Prediction vs Reality
+→ Final Decision Report
+
+
+============================================================
+2. RESEARCH CONTRIBUTION / CENTRAL IDEA
+============================================================
+
+The project should NOT claim that any individual technique is novel.
+
+Do NOT claim individual novelty for:
+
+- Infrastructure-as-Code analysis
+- Kubernetes security analysis
+- Dependency graphs
+- Runtime monitoring
+- Change Impact Analysis
+- Selective prediction/abstention
+- Security remediation
+- NetworkPolicy analysis
+- IAM analysis
+- Static analysis
+- Dynamic analysis
+
+These areas already have substantial literature.
+
+The research contribution should instead be investigated as the COMBINATION / INTEGRATION of:
+
+1. Heterogeneous evidence:
+   - Infrastructure
+   - Application
+   - Runtime
+
+2. Evidence/dependency graph
+
+3. Security + operational impact prediction
+
+4. Explicit confidence/evidence gating
+
+5. Ability to abstain when evidence is insufficient
+
+6. Minimal security remediation that attempts to preserve required functionality
+
+7. Controlled execution/verification
+
+8. Prediction-vs-reality evaluation
+
+The novelty claim must remain conservative and literature-supported.
+
+Do not say:
+“No existing system does this.”
+
+Instead use wording such as:
+“Based on the literature reviewed...”
+or
+“The reviewed literature provides these capabilities largely as separate research directions; this project investigates their integration...”
+
+
+============================================================
+3. MAIN RESEARCH QUESTION
+============================================================
+
+Main RQ:
+
+“Does combining infrastructure, application, and runtime evidence improve prediction of the security and operational impact of cloud-security changes compared with infrastructure-only analysis?”
+
+The project should experimentally compare evidence configurations.
+
+Primary baselines:
+
+A = Infrastructure only
+
+B = Infrastructure + Application
+
+C = Infrastructure + Runtime
+
+D / Proposed =
+Infrastructure + Application + Runtime
++ Evidence Gate
++ Minimal Remediation
+
+The purpose is to determine whether adding heterogeneous evidence actually improves prediction rather than merely claiming that it does.
+
+
+============================================================
+4. INITIAL CHANGE CATEGORIES
+============================================================
+
+Keep the initial scope limited to THREE categories:
+
+1. IAM permission/access changes
+
+2. Network/security-rule changes
+
+3. Kubernetes access/network-policy changes
+
+Do not expand into every possible cloud security configuration.
+
+The Kubernetes NetworkPolicy scenario is especially important for the initial POC.
+
+
+============================================================
+5. EVIDENCE TYPES
+============================================================
+
+A. INFRASTRUCTURE EVIDENCE
+
+Sources can include:
+
+- OpenTofu/Terraform
+- Kubernetes YAML
+- IAM policies
+- RBAC
+- Network/security rules
+- Kubernetes NetworkPolicy
+- infrastructure configuration
+- service definitions
+
+Examples:
+
+Backend deployment
+Database service
+NetworkPolicy
+RBAC permission
+IAM permission
+security group/network rule
+
+
+B. APPLICATION EVIDENCE
+
+Sources can include:
+
+- source code
+- API calls
+- service definitions
+- database connections
+- configuration files
+- environment variables
+- dependency manifests
+- application-level dependencies
+
+Example:
+
+Backend source code contains a PostgreSQL connection.
+
+This provides evidence:
+
+Backend → depends_on → PostgreSQL
+
+
+C. RUNTIME EVIDENCE
+
+Sources can include:
+
+- OpenTelemetry
+- Jaeger
+- logs
+- metrics
+- traces
+- service-to-service communication
+- access/activity telemetry
+
+Example:
+
+Observed runtime trace:
+
+Frontend → Backend → PostgreSQL
+
+This provides actual observed dependency evidence.
+
+
+============================================================
+6. IMPORTANT EVIDENCE PRINCIPLE
+============================================================
+
+One of the central research principles is:
+
+“Absence of observed runtime usage does NOT automatically mean absence of dependency.”
+
+For example:
+
+If PostgreSQL was not observed during a short runtime test, the system must not automatically conclude:
+
+Backend does not depend on PostgreSQL.
+
+Possible explanations:
+
+- functionality was not exercised
+- insufficient workload
+- telemetry was incomplete
+- dependency is conditional
+- evidence collection failed
+
+Therefore:
+
+Incomplete/conflicting evidence should reduce confidence.
+
+The system should be able to say:
+
+INSUFFICIENT EVIDENCE
+
+rather than making an unsafe high-confidence decision.
+
+
+============================================================
+7. EVIDENCE MODEL
+============================================================
+
+Evidence should preserve provenance.
+
+A conceptual evidence object can contain:
+
+- evidence_id
+- source
+- evidence_type
+- subject/component
+- relationship
+- object/target
+- timestamp
+- confidence
+- provenance
+- optional metadata
+
+Example:
+
+{
+    "evidence_id": "E123",
+    "source": "kubernetes-networkpolicy",
+    "evidence_type": "infrastructure",
+    "subject": "backend",
+    "relationship": "DEPENDS_ON",
+    "object": "database",
+    "timestamp": "...",
+    "confidence": 0.85
+}
+
+Evidence should be distinguishable as:
+
+- observed
+- inferred
+- verified
+
+Do not treat scanner output or runtime absence as absolute truth.
+
+
+============================================================
+8. UNIFIED EVIDENCE / DEPENDENCY GRAPH
+============================================================
+
+Initially use:
+
+NetworkX
+
+Do NOT introduce Neo4j unless explicitly needed later.
+
+Graph nodes can represent:
+
+- services
+- pods
+- deployments
+- databases
+- APIs
+- network rules
+- IAM identities
+- permissions
+- infrastructure components
+
+Edges can represent:
+
+- DEPENDS_ON
+- CALLS
+- CONNECTS_TO
+- ALLOWED
+- DENIED
+- HAS_PERMISSION
+- DEPLOYED_AS
+- OBSERVED_COMMUNICATION
+- CONFIGURED_BY
+
+Edges should preserve:
+
+- evidence IDs
+- source
+- evidence type
+- confidence
+- provenance
+
+The graph is not just for visualization.
+
+It is used for:
+
+- dependency reasoning
+- affected-component identification
+- impact propagation
+- evidence aggregation
+- prediction
+
+
+============================================================
+9. COMPLETE SYSTEM ARCHITECTURE
+============================================================
+
+USER / RESEARCHER
+        ↓
+CHANGE SUBMISSION INTERFACE
+(Web UI / CLI / REST API)
+        ↓
+CHANGE PARSER
+        ↓
+SUPPORTED CHANGE TYPES
+ ├── IAM permission/access
+ ├── Network/security rule
+ └── Kubernetes NetworkPolicy/access
+        ↓
+EVIDENCE COLLECTION
+ ├── Infrastructure Evidence
+ │    ├── OpenTofu/Terraform
+ │    ├── Kubernetes YAML
+ │    ├── IAM/RBAC
+ │    ├── Network rules
+ │    └── NetworkPolicy
+ │
+ ├── Application Evidence
+ │    ├── source code
+ │    ├── configuration
+ │    ├── environment variables
+ │    ├── API calls
+ │    ├── DB connections
+ │    └── service/dependency definitions
+ │
+ └── Runtime Evidence
+      ├── OpenTelemetry
+      ├── Jaeger
+      ├── logs
+      ├── metrics
+      └── observed service communication
+        ↓
+EVIDENCE NORMALIZATION
+        ↓
+UNIFIED EVIDENCE / DEPENDENCY GRAPH
+        ↓
+IMPACT PREDICTION
+ ├── Security Impact Analyzer
+ ├── Operational Risk Analyzer
+ └── Affected Component Analysis
+        ↓
+PREDICTION OUTPUT
+ ├── Security impact
+ ├── Operational risk
+ ├── Affected components
+ ├── Confidence
+ └── Explanation/supporting evidence
+        ↓
+EVIDENCE GATE
+ ├── SAFE
+ ├── RISKY
+ └── INSUFFICIENT EVIDENCE
+        ↓
+IF RISKY:
+MINIMAL SAFE REMEDIATION
+        ↓
+CONTROLLED VERIFICATION
+        ↓
+ACTUAL RUNTIME RESULT
+        ↓
+PREDICTION VS REALITY
+        ↓
+FINAL DECISION / RESEARCH REPORT
+
+
+============================================================
+10. INITIAL PROOF OF CONCEPT
+============================================================
+
+The first experimental application should be:
+
+Frontend
+    ↓
+Backend
+    ↓
+PostgreSQL
+
+Run this locally using Kubernetes/Kind.
+
+Infrastructure is defined using OpenTofu where practical.
+
+Runtime communication is observed using OpenTelemetry/Jaeger.
+
+Then introduce a Kubernetes NetworkPolicy that blocks:
+
+Backend → PostgreSQL
+
+The system should:
+
+1. Parse the proposed NetworkPolicy/security change.
+
+2. Collect infrastructure evidence.
+
+3. Collect application evidence.
+
+4. Collect runtime evidence.
+
+5. Build the evidence/dependency graph.
+
+6. Identify:
+
+Backend → PostgreSQL
+
+as an important dependency.
+
+7. Predict:
+
+Security impact:
+Potentially positive because communication is restricted.
+
+Operational risk:
+High because required backend→database communication may break.
+
+Affected components:
+Backend
+Database
+Potentially Frontend indirectly.
+
+8. Evidence gate:
+RISKY.
+
+9. Apply the change in the controlled local environment.
+
+10. Run the workload.
+
+11. Observe actual behavior.
+
+12. Backend database access should fail.
+
+13. Frontend may fail indirectly depending on application behavior.
+
+14. Compare:
+
+Predicted result
+vs
+Actual result.
+
+15. Record the result for evaluation.
+
+This is the first major working experiment.
+
+
+============================================================
+11. EXPERIMENTAL ENVIRONMENT
+============================================================
+
+Current machine:
+
+Windows.
+
+Recommended environment:
+
+Windows
+→ WSL2
+→ Ubuntu
+→ Docker
+→ Kind Kubernetes cluster
+
+Use local reproducible infrastructure.
+
+Do NOT require AWS/Azure/GCP for the core experiment.
+
+The core research experiment must work locally.
+
+
+============================================================
+12. TECHNOLOGY STACK
+============================================================
+
+Operating system:
+
+Windows
+
+Linux environment:
+
+WSL2 + Ubuntu
+
+Development:
+
+Kiro
+Git
+GitHub
+
+Containers:
+
+Docker / Docker Desktop
+
+Kubernetes:
+
+Kubernetes
+Kind
+
+Infrastructure as Code:
+
+OpenTofu
+(Terraform-compatible concepts where useful)
+
+Backend:
+
+Python
+FastAPI
+Pydantic
+
+Parsing:
+
+PyYAML
+
+Graph:
+
+NetworkX
+
+Database:
+
+PostgreSQL
+
+Data analysis:
+
+Pandas
+
+Machine Learning:
+
+scikit-learn
+
+Observability:
+
+OpenTelemetry
+Jaeger
+Prometheus
+Grafana
+
+Testing:
+
+Pytest
+
+CI/CD:
+
+GitHub Actions
+
+Frontend:
+
+React / Next.js or a lightweight UI later
+
+Do not add unnecessary technologies such as:
+
+Kafka
+Redis
+Spark
+Airflow
+Neo4j
+Elasticsearch
+
+unless a specific research/implementation need is demonstrated.
+
+
+============================================================
+13. IMPLEMENTATION ROADMAP
+============================================================
+
+Implement in this order:
+
+PHASE 0:
+Development environment
+
+- Windows
+- WSL2
+- Ubuntu
+- Docker
+- Kind
+- Kiro
+- Git/GitHub
+
+PHASE 1:
+Learn Docker + Kubernetes basics
+
+Need to understand:
+
+- images
+- containers
+- Dockerfiles
+- volumes
+- networks
+- Kubernetes pods
+- deployments
+- services
+- namespaces
+- ConfigMaps
+- Secrets
+- labels/selectors
+- probes
+- NetworkPolicy
+
+PHASE 2:
+Build experimental application
+
+Frontend
+→ Backend
+→ PostgreSQL
+
+PHASE 3:
+Add OpenTofu infrastructure
+
+PHASE 4:
+Add Kubernetes NetworkPolicy
+
+Create reproducible security-change scenarios.
+
+PHASE 5:
+Infrastructure Evidence Extractor
+
+Parse:
+
+- OpenTofu/Terraform
+- Kubernetes YAML
+- NetworkPolicy
+- IAM/RBAC
+- network/security configuration
+
+PHASE 6:
+Application Evidence Extractor
+
+Extract:
+
+- API dependencies
+- DB connections
+- service calls
+- configurations
+- application dependencies
+
+PHASE 7:
+Runtime Evidence Extractor
+
+Use:
+
+- OpenTelemetry
+- Jaeger
+- logs
+- metrics
+
+PHASE 8:
+Evidence normalization
+
+Convert all evidence into a common representation.
+
+PHASE 9:
+Evidence/dependency graph
+
+Build using NetworkX.
+
+PHASE 10:
+Change parser
+
+Parse proposed changes.
+
+PHASE 11:
+Impact prediction
+
+Start RULE-BASED.
+
+Do NOT begin with ML.
+
+Predict:
+
+- security impact
+- operational risk
+- affected components
+- confidence
+
+PHASE 12:
+Evidence Gate
+
+Implement:
+
+SAFE
+RISKY
+INSUFFICIENT EVIDENCE
+
+PHASE 13:
+Controlled verification
+
+Apply the change in Kind.
+
+Run workload.
+
+Collect telemetry.
+
+Observe actual result.
+
+PHASE 14:
+Prediction vs Reality
+
+Compare predicted:
+
+- affected components
+- operational impact
+- security effect
+
+with actual behavior.
+
+PHASE 15:
+Dataset generation
+
+Create controlled scenarios.
+
+PHASE 16:
+Baselines
+
+A:
+Infrastructure only
+
+B:
+Infrastructure + Application
+
+C:
+Infrastructure + Runtime
+
+D:
+All evidence + Gate + Remediation
+
+PHASE 17:
+Evaluation
+
+Measure prediction performance.
+
+PHASE 18:
+Minimal remediation
+
+Only after the basic prediction system works.
+
+PHASE 19:
+Optional ML
+
+ML should be added only if it provides a clear research/evaluation benefit.
+
+PHASE 20:
+Dashboard/reporting
+
+Only after the core research pipeline is working.
+
+
+============================================================
+14. RECOMMENDED BACKEND STRUCTURE
+============================================================
+
+backend/
+│
+├── app/
+│   ├── main.py
+│   │
+│   ├── api/
+│   │   ├── changes.py
+│   │   ├── evidence.py
+│   │   ├── prediction.py
+│   │   ├── verification.py
+│   │   └── reports.py
+│   │
+│   ├── change_parser/
+│   │   ├── parser.py
+│   │   ├── iam.py
+│   │   ├── network.py
+│   │   └── kubernetes.py
+│   │
+│   ├── evidence/
+│   │   ├── infrastructure.py
+│   │   ├── application.py
+│   │   ├── runtime.py
+│   │   └── normalization.py
+│   │
+│   ├── graph/
+│   │   ├── builder.py
+│   │   ├── nodes.py
+│   │   └── edges.py
+│   │
+│   ├── prediction/
+│   │   ├── security.py
+│   │   ├── operational.py
+│   │   ├── impact.py
+│   │   └── confidence.py
+│   │
+│   ├── gate/
+│   │   └── evidence_gate.py
+│   │
+│   ├── remediation/
+│   │   └── minimal_remediation.py
+│   │
+│   ├── verification/
+│   │   ├── executor.py
+│   │   ├── telemetry.py
+│   │   └── comparator.py
+│   │
+│   ├── evaluation/
+│   │   ├── metrics.py
+│   │   ├── baselines.py
+│   │   └── experiments.py
+│   │
+│   ├── models/
+│   │   ├── change.py
+│   │   ├── evidence.py
+│   │   ├── prediction.py
+│   │   └── result.py
+│   │
+│   └── tests/
+
+
+Experimental environment:
+
+infrastructure/
+└── opentofu/
+
+kubernetes/
+├── frontend/
+├── backend/
+├── database/
+└── policies/
+
+services/
+├── frontend/
+├── backend/
+└── database/
+
+telemetry/
+├── opentelemetry/
+├── jaeger/
+└── prometheus/
+
+
+============================================================
+15. IMPACT PREDICTION
+============================================================
+
+Initially use explainable/rule-based prediction.
+
+Do not start with complex ML.
+
+Example:
+
+If:
+
+Backend → Database
+
+is supported by:
+
+- infrastructure evidence
+- application evidence
+- runtime evidence
+
+and proposed change:
+
+blocks Backend → Database
+
+then:
+
+Security impact:
+Positive/strengthened restriction
+
+Operational risk:
+High
+
+Affected:
+Backend
+Database
+possibly Frontend
+
+Confidence:
+High if evidence agrees.
+
+If only infrastructure evidence exists:
+
+Confidence:
+Lower.
+
+If evidence conflicts:
+
+Potentially:
+
+INSUFFICIENT EVIDENCE.
+
+
+============================================================
+16. SECURITY ANALYSIS
+============================================================
+
+Security analysis can consider:
+
+- privilege reduction/increase
+- attack surface
+- access control
+- least privilege
+- isolation
+- lateral movement
+- unauthorized communication
+- network exposure
+- overly permissive rules
+- denied required communication
+
+For Kubernetes NetworkPolicy:
+
+Consider:
+
+- ingress
+- egress
+- podSelector
+- namespaceSelector
+- ports
+- policyTypes
+- allowed/denied communication
+- isolation
+
+Important principle:
+
+Security improvement can create operational risk.
+
+The system must evaluate BOTH.
+
+Do not treat:
+
+“more restrictive = always better.”
+
+Example:
+
+Blocking all backend→database traffic may improve isolation but break the application.
+
+
+============================================================
+17. EVIDENCE GATE
+============================================================
+
+The gate is a core research component.
+
+Possible outputs:
+
+SAFE
+
+RISKY
+
+INSUFFICIENT EVIDENCE
+
+Conceptually:
+
+IF:
+evidence is strong
+AND predicted impact is low
+AND no important dependency is affected
+→ SAFE
+
+IF:
+evidence is strong
+AND important dependency/security trade-off is detected
+→ RISKY
+
+IF:
+evidence is incomplete/conflicting
+AND confidence is insufficient
+→ INSUFFICIENT EVIDENCE
+
+The system must not force a binary safe/unsafe answer when evidence is insufficient.
+
+
+============================================================
+18. MINIMAL SAFE REMEDIATION
+============================================================
+
+When a proposed change is risky, remediation should aim to:
+
+- achieve the intended security goal
+- preserve necessary application functionality
+- follow least privilege
+- minimize unnecessary permissions/communication
+- avoid broad allow rules
+- avoid simply undoing the security change
+
+Example:
+
+Instead of:
+
+DENY everything
+
+or:
+
+ALLOW everything
+
+generate a narrow rule that permits only the required Backend→Database communication while maintaining appropriate restrictions.
+
+Remediation must be validated.
+
+Scanner success alone is not enough to prove semantic correctness.
+
+
+============================================================
+19. CONTROLLED VERIFICATION
+============================================================
+
+Verification must occur in a controlled local environment.
+
+Process:
+
+1. Start known baseline system.
+2. Collect baseline evidence.
+3. Propose change.
+4. Predict impact.
+5. Apply change.
+6. Run predefined workload.
+7. Collect telemetry/logs/metrics.
+8. Determine actual result.
+9. Compare prediction vs reality.
+10. Store result.
+
+The project should produce reproducible experiment records.
+
+
+============================================================
+20. EVALUATION
+============================================================
+
+Prediction metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1
+- ROC-AUC where appropriate
+
+Risk metrics:
+
+- False positives
+- False negatives
+- affected-component identification accuracy
+
+Confidence:
+
+- calibration
+- reliability
+- accuracy by confidence bucket
+- abstention rate
+
+Evidence Gate:
+
+- safe/risky/insufficient classification
+- abstention quality
+- performance under incomplete evidence
+
+Remediation:
+
+- security improvement
+- operational failures
+- residual risk
+- minimality
+- functionality preservation
+
+Verification:
+
+- prediction vs actual runtime behavior
+
+
+============================================================
+21. IMPORTANT EXPERIMENT DESIGN
+============================================================
+
+The most important experiment is evidence ablation/comparison.
+
+Compare:
+
+A:
+Infrastructure only
+
+B:
+Infrastructure + Application
+
+C:
+Infrastructure + Runtime
+
+D:
+Infrastructure + Application + Runtime
+
+Then evaluate whether:
+
+D > A/B/C
+
+in relevant metrics.
+
+The research should demonstrate experimentally whether heterogeneous evidence improves prediction.
+
+Do not assume the answer before experiments.
+
+
+============================================================
+22. RESEARCH PAPERS REVIEWED
+============================================================
+
+Important literature reviewed so far includes the following.
+
+
+PAPER 1
+
+Bushong et al. (2021)
+
+“On Microservice Analysis and Architecture Evolution: A Systematic Mapping Study”
+
+Applied Sciences, 11, 7856.
+
+Important points:
+
+- Systematic mapping of microservice analysis research.
+- 2208 initial results and 55 selected works.
+- Analysis approaches:
+  - Static analysis
+  - Dynamic analysis
+  - Graph-based analysis
+  - Model-based analysis
+  - Pattern-based analysis
+- Dynamic analysis often supports faults/root-cause understanding using logs/traces.
+- Static analysis often supports architecture understanding.
+- Hybrid static + dynamic analysis is used for dependency recovery.
+- Graphs represent service dependencies.
+- Research gaps include benchmarks, dynamic overhead/data volume, temporal graphs, prediction and ML.
+
+Relevance to project:
+
+Supports:
+- dependency analysis
+- graph representation
+- static + dynamic evidence
+- runtime evidence
+- architecture/dependency understanding
+
+Does NOT itself provide:
+- cloud-security-change impact prediction
+- evidence gate
+- abstention
+- minimal remediation
+- prediction-vs-reality loop
+
+
+PAPER 2
+
+Chiari, De Pascalis & Pradella (2022)
+
+“Static Analysis of Infrastructure as Code: a Survey”
+
+arXiv:2206.10344.
+
+Important points:
+
+- IaC can contain security/reliability/availability/performance defects.
+- Reviews IaC security analysis tools and techniques.
+- Includes Terraform, CloudFormation, Puppet, Ansible, Chef, TOSCA etc.
+- Techniques include:
+  - syntactic/code smell analysis
+  - ML/data mining
+  - formal verification
+  - model checking
+  - SMT
+- Security smells include:
+  - hard-coded secrets
+  - excessive privilege
+  - no TLS
+  - unrestricted IP
+  - weak crypto
+  - empty passwords etc.
+- Highlights need for better automation and automated remediation.
+
+Relevance:
+
+Supports infrastructure evidence/security analysis.
+
+Project extends from:
+“Is this IaC insecure?”
+
+to:
+
+“What happens if this security-related change is applied, which components are affected, what evidence supports the prediction, and how should uncertainty/remediation be handled?”
+
+
+PAPER 3
+
+Hu et al.
+
+“Characterizing Static Analysis Alerts for Terraform Manifests: An Experience Report”
+
+IEEE conference, Atlanta, 2023, pp. 7–13.
+
+Important points:
+
+- Studies Terraform static analysis alerts.
+- 10 OSS + 1 proprietary Terraform repository.
+- 491 alerts.
+- Uses Checkov.
+- Categories include:
+  - application security
+  - backup/recovery
+  - encryption
+  - IAM
+  - Kubernetes
+  - logging
+  - networking
+  - supply chain etc.
+- Builds Terraform dependency graph.
+- Uses NetworkX.
+- Uses PageRank and statistical analysis.
+- Alerts generally showed higher PageRank.
+- Dependency information correlated with alert frequency.
+- Practitioner feedback suggests dependency graphs can help visualization and change-impact analysis.
+- Limitations include limited repositories/practitioners and scanner/graph limitations.
+
+Relevance:
+
+Very important for:
+
+- Terraform/IaC dependency graph
+- NetworkX
+- dependency-aware alert analysis
+- change impact analysis
+
+Project extends with:
+
+- application evidence
+- runtime evidence
+- prediction
+- confidence
+- evidence gate
+- remediation
+- verification
+
+
+PAPER 4
+
+Minna, Massacci & Tuma (2024)
+
+“Analyzing and Mitigating (with LLMs) the Security Misconfigurations of Helm Charts from Artifact Hub”
+
+MSR 2024.
+
+Important points:
+
+- Studies security misconfigurations in Helm charts/Kubernetes.
+- Uses several open-source analyzers including:
+  - Checkov
+  - Datree
+  - KICS
+  - Kube-linter
+  - Kubeaudit
+  - Kubescape
+  - Terrascan
+- Investigates LLM-based remediation.
+- Scanner outputs can disagree.
+- Scanner passing does NOT necessarily prove semantic security.
+- Example: presence-based NetworkPolicy checks may be satisfied without meaningful protection.
+- LLM remediation can be:
+  - correct
+  - wrong
+  - refused
+- Manual validation is required.
+
+Relevance:
+
+Strong support for:
+
+- remediation
+- post-remediation validation
+- scanner limitations
+- evidence not being absolute ground truth
+- need for controlled verification
+
+
+PAPER 5
+
+War, Nikiema, Samhi, Klein, Bissyande (2025 preprint)
+
+“Security Smells in Infrastructure as Code Scripts: A Taxonomy Update Beyond the Seven Sins.”
+
+arXiv:2509.18761.
+
+Important points:
+
+- Extends IaC security smell taxonomy.
+- Covers seven IaC tools:
+  - Ansible
+  - Terraform
+  - Chef
+  - Puppet
+  - Pulumi
+  - Vagrant
+  - SaltStack
+- 62 CWE-related categories.
+- Uses security-fix commits, Snyk, LLM assistance and manual validation.
+- Security-fix dataset and human validation.
+- LLMs help categorization but do not replace expert judgment.
+- Security smells persist over time.
+- Rule/linter generation needs validation.
+
+Relevance:
+
+Supports:
+- security taxonomy
+- Git history as evidence
+- security-fix knowledge
+- LLM-as-assistant rather than ground truth
+- validation requirement
+
+Not the core novelty of the project.
+
+
+PAPER 6
+
+Gomez, Elsayed, Zarate, Dak, Cerny (2026)
+
+“Formal Verification Under Evolution in Microservice-Based Systems: A Systematic Literature Review”
+
+Software 2026, 5, 32.
+
+Important points:
+
+- Studies formal verification + microservice evolution.
+- RQs include:
+  - formal verification approaches
+  - architecture/API evolution
+  - repository/artifact signals
+  - continuous/incremental verification
+- Evolution changes:
+  - APIs
+  - architecture
+  - dependency topology
+  - drift
+- Repository signals can include:
+  - commits
+  - API diffs
+  - dependency manifests
+  - Dockerfiles
+  - Helm charts
+- Supports runtime verification.
+- Highlights limited shared benchmarks and public artifacts.
+- End-to-end design-time → runtime verification loops are relatively limited.
+
+Relevance:
+
+Supports:
+- evolution-aware analysis
+- Git/repository evidence
+- controlled verification
+- prediction-vs-reality idea
+- reproducibility/benchmark motivation
+
+Do not overclaim that this proves no other systems exist.
+
+
+PAPER 7
+
+Budigiri, Baumann, Muhlberg, Truyen, Joosen
+
+“Network Policies in Kubernetes: Performance Evaluation and Security Analysis.”
+
+Important points:
+
+- Studies Kubernetes NetworkPolicy.
+- Evaluates Calico/Cilium/eBPF environments.
+- Security topics:
+  - misconfiguration
+  - weak policy design
+  - tenant administrators
+  - privileged networking
+  - vulnerable CNI implementations
+  - policy leakage
+  - eBPF threats
+- NetworkPolicy is additive.
+- Least privilege is important.
+- NetworkPolicy reduces attack surface/lateral movement but is not a complete security solution.
+- Policy definition does not necessarily prove actual enforcement.
+- Also studies performance overhead.
+
+Relevance:
+
+Important foundation for the project's Kubernetes NetworkPolicy change category.
+
+Supports:
+
+- least privilege
+- isolation
+- lateral movement
+- operational/security trade-off
+- Kubernetes security analysis
+
+Project extends toward predicting the impact of proposed policy changes using multiple evidence sources and verifying actual outcomes.
+
+
+============================================================
+23. EARLIER LITERATURE LANDSCAPE
+============================================================
+
+The literature currently falls into several areas:
+
+1. Microservice analysis/evolution
+2. IaC security/static analysis
+3. Terraform dependency/alert analysis
+4. Kubernetes NetworkPolicy security
+5. Helm/Kubernetes remediation
+6. Continuous/evolution-aware verification
+7. Runtime dependency/observability
+8. Selective prediction/confidence/abstention
+9. Security remediation
+
+The combined literature suggests:
+
+- Dependencies are central.
+- Static evidence is useful but incomplete.
+- Runtime evidence captures actual exercised behavior.
+- Scanner output is not ground truth.
+- LLM output is not ground truth.
+- Security must be evaluated in context.
+- Evolution makes verification harder.
+- Shared benchmarks are limited.
+- Evidence provenance and uncertainty are important.
+
+
+============================================================
+24. RESEARCH GAP DIRECTION
+============================================================
+
+Current defensible gap wording:
+
+“Existing research provides substantial foundations for microservice dependency analysis, IaC static analysis, Terraform dependency-aware security analysis, Kubernetes network-policy security, LLM-assisted configuration remediation, and continuous verification. However, these research directions are largely studied as separate analytical problems. Based on the literature reviewed, there is limited integration of infrastructure, application, and runtime observations for predicting the security and operational impact of proposed cloud-security changes before deployment, with explicit evidence gating/abstention, minimal remediation, and controlled prediction-versus-reality evaluation.”
+
+This must always be qualified as:
+
+“based on the literature reviewed”
+
+unless a broader literature search has been conducted.
+
+
+============================================================
+25. PROJECT IMPLEMENTATION ARCHITECTURE
+============================================================
+
+Host:
+
+Windows
+
+↓
+
+WSL2 + Ubuntu
+
+↓
+
+Docker
+
+↓
+
+Kind Kubernetes cluster
+
+Inside cluster:
+
+Frontend
+Backend
+PostgreSQL
+
+Research system sits alongside/around the experimental environment.
+
+Research backend:
+
+Python + FastAPI
+
+Evidence:
+
+Infrastructure
+Application
+Runtime
+
+↓
+
+Normalization
+
+↓
+
+NetworkX graph
+
+↓
+
+Impact analysis
+
+↓
+
+Evidence Gate
+
+↓
+
+Remediation
+
+↓
+
+Verification
+
+↓
+
+Evaluation/reporting
+
+
+============================================================
+26. KIRO DECISION
+============================================================
+
+I have decided to use Kiro as the primary AI-assisted development environment/IDE for the project.
+
+Kiro should be treated as:
+
+- development environment
+- engineering assistant
+- coding assistant
+- testing assistant
+- debugging assistant
+- project-structure assistant
+
+Kiro should NOT be treated as:
+
+- the authority on research novelty
+- the authority on research methodology
+- a source of verified literature
+- a source of experimental results
+- a replacement for understanding the implementation
+
+
+============================================================
+27. KIRO DEVELOPMENT PHILOSOPHY
+============================================================
+
+Do NOT tell Kiro:
+
+“Build my entire project.”
+
+Instead work phase-by-phase.
+
+Preferred workflow:
+
+Research decision
+→ Requirement
+→ Kiro Specification
+→ Design
+→ Tasks
+→ Implementation
+→ Tests
+→ Actual execution
+→ Experiment
+→ Results
+→ Evaluation
+
+Use Kiro Specs to structure development.
+
+Use Kiro steering files to maintain project context.
+
+
+============================================================
+28. RECOMMENDED KIRO STEERING FILES
+============================================================
+
+Create:
+
+.kiro/
+└── steering/
+    ├── project-overview.md
+    ├── architecture.md
+    ├── technology-stack.md
+    ├── research-constraints.md
+    ├── coding-standards.md
+    ├── experimentation.md
+    └── research-integrity.md
+
+
+============================================================
+29. KIRO RESEARCH-INTEGRITY RULES
+============================================================
+
+Kiro should follow:
+
+- Never fabricate references.
+- Never invent experimental results.
+- Never claim an experiment passed unless it actually ran.
+- Never claim a dependency exists solely because it was not observed at runtime.
+- Distinguish observed evidence from inferred evidence.
+- Preserve evidence provenance.
+- Represent uncertainty explicitly.
+- Do not silently replace deterministic analysis with ML.
+- Do not introduce cloud-provider dependencies unless explicitly required.
+- Do not claim novelty without literature support.
+- Prefer reproducible local experiments.
+- Every research result must be traceable to an experiment or source.
+
+
+============================================================
+30. HOW KIRO SHOULD BE USED
+============================================================
+
+Good Kiro tasks:
+
+“Create a minimal reproducible Kind Kubernetes environment containing frontend, backend and PostgreSQL. Add health checks and integration tests.”
+
+“Create a NetworkPolicy that blocks backend→database communication while preserving frontend→backend communication.”
+
+“Implement the infrastructure evidence extractor for Kubernetes NetworkPolicy.”
+
+“Implement an evidence model with provenance and confidence.”
+
+“Build the NetworkX evidence graph.”
+
+“Implement a rule-based operational impact analyzer.”
+
+“Create pytest tests for the evidence gate.”
+
+“Create a reproducible experiment runner.”
+
+Bad Kiro task:
+
+“Build my entire research project.”
+
+Also avoid letting Kiro randomly introduce:
+
+- Kafka
+- Redis
+- Neo4j
+- Spark
+- Airflow
+- Elasticsearch
+- cloud services
+
+without a justified requirement.
+
+
+============================================================
+31. WHAT I SHOULD PERSONALLY UNDERSTAND
+============================================================
+
+I need to learn and understand:
+
+Linux basics
+Docker
+Kubernetes
+Kind
+NetworkPolicy
+IAM/access control concepts
+RBAC
+OpenTofu
+YAML
+Python
+FastAPI
+Pydantic
+NetworkX
+PostgreSQL
+OpenTelemetry
+Jaeger
+Prometheus
+Grafana
+Pytest
+Git/GitHub
+security concepts
+dependency analysis
+confidence
+abstention
+risk prediction
+evaluation metrics
+
+I should not blindly copy Kiro-generated code.
+
+I need to be able to explain:
+
+- why each component exists
+- what it does
+- how evidence flows through the system
+- how prediction works
+- why confidence changes
+- why abstention is necessary
+- how verification works
+- how experiments prove/disprove the research hypothesis
+
+
+============================================================
+32. KIRO + MY ROLE + CHATGPT ROLE
+============================================================
+
+My role:
+
+- make research decisions
+- understand the implementation
+- run experiments
+- validate results
+- present the project
+- defend the methodology
+
+Kiro:
+
+- implementation
+- boilerplate
+- tests
+- debugging
+- code organization
+- Kubernetes/OpenTofu configuration
+- development automation
+
+ChatGPT:
+
+- research architecture
+- research methodology
+- literature analysis
+- research gap reasoning
+- implementation planning
+- learning/explanations
+- debugging guidance
+- experiment design
+- evaluation design
+- paper writing
+- presentation/viva preparation
+
+Important:
+
+Kiro, ChatGPT, and I should not contradict the established project scope without explicitly discussing the change.
+
+
+============================================================
+33. MINIMUM VIABLE RESEARCH SYSTEM
+============================================================
+
+If time becomes limited, the minimum acceptable project should contain:
+
+1. Local Kubernetes environment
+
+2. Frontend → Backend → PostgreSQL application
+
+3. OpenTofu/infrastructure representation
+
+4. Infrastructure evidence
+
+5. Application evidence
+
+6. Runtime evidence
+
+7. Unified evidence/dependency graph
+
+8. At least one supported change category
+
+Preferably Kubernetes NetworkPolicy first.
+
+9. Impact prediction
+
+10. Confidence/evidence gate
+
+11. SAFE / RISKY / INSUFFICIENT output
+
+12. Controlled verification
+
+13. Prediction vs actual runtime result
+
+14. Baseline comparison
+
+15. Evaluation metrics
+
+
+============================================================
+34. PRIORITY ORDER
+============================================================
+
+The most important order is:
+
+1. Make local environment work.
+
+2. Make microservice application work.
+
+3. Create reproducible security change.
+
+4. Observe actual effect.
+
+5. Build evidence extraction.
+
+6. Build evidence graph.
+
+7. Build prediction.
+
+8. Build evidence gate.
+
+9. Build verification.
+
+10. Build experiments.
+
+11. Compare baselines.
+
+12. Evaluate.
+
+13. Add remediation.
+
+14. Add optional ML.
+
+15. Add dashboard.
+
+16. Write final paper.
+
+
+============================================================
+35. DO NOT START WITH ML
+============================================================
+
+The first implementation should NOT be a machine-learning model.
+
+Start with explainable deterministic rules.
+
+Why?
+
+Because the research first needs:
+
+- evidence
+- graph
+- dependency reasoning
+- prediction
+- confidence
+- controlled verification
+
+Once this works, ML can optionally be evaluated as an additional prediction method.
+
+The project should not become an “AI/ML project” just for the sake of using ML.
+
+
+============================================================
+36. RESEARCH PAPER / PUBLICATION DIRECTION
+============================================================
+
+Target:
+
+- IEEE/Scopus-oriented research publication
+- open-source GitHub release
+- reproducible local experiments
+
+The literature review should be written academically.
+
+Avoid generic AI-generated statements.
+
+Use precise citations.
+
+Do not fabricate DOI/pages/venues.
+
+Bibliographic details must be verified against actual papers before final submission.
+
+The literature review should:
+
+1. Introduce the problem.
+2. Explain existing research areas.
+3. Compare papers.
+4. Identify what each paper contributes.
+5. Identify limitations.
+6. Synthesize cross-paper gaps.
+7. Position this project.
+8. Define research questions.
+9. Explain evaluation.
+
+
+============================================================
+37. LITERATURE REVIEW STYLE
+============================================================
+
+Do not simply write:
+
+“Paper X did this.
+Paper Y did this.
+Paper Z did this.”
+
+Instead compare themes:
+
+- what existing methods observe
+- what evidence they use
+- whether they predict or detect
+- whether they use static/dynamic evidence
+- whether they model dependencies
+- whether they consider operational impact
+- whether they quantify uncertainty
+- whether they abstain
+- whether they remediate
+- whether they verify actual runtime behavior
+
+The literature review should lead naturally to the research problem.
+
+
+============================================================
+38. IMPORTANT RESEARCH POSITIONING
+============================================================
+
+The project is NOT:
+
+- a generic cloud security scanner
+- a generic IaC linter
+- a generic Kubernetes dashboard
+- a generic dependency visualizer
+- a generic ML classifier
+- a generic LLM remediation tool
+- a commercial cloud management platform
+
+It is:
+
+An evidence-gated predictive system for assessing the security and operational impact of proposed cloud-security changes using infrastructure, application and runtime evidence, followed by controlled verification.
+
+
+============================================================
+39. EXAMPLE END-TO-END SCENARIO
+============================================================
+
+Initial state:
+
+Frontend
+→ Backend
+→ PostgreSQL
+
+Evidence:
+
+Infrastructure:
+Backend can communicate with PostgreSQL.
+
+Application:
+Backend source code contains PostgreSQL connection.
+
+Runtime:
+Backend has communicated with PostgreSQL.
+
+Graph:
+
+Frontend
+   |
+   ↓
+Backend
+   |
+   ↓
+PostgreSQL
+
+Proposed change:
+
+NetworkPolicy blocks Backend → PostgreSQL.
+
+Prediction:
+
+Security:
+Improved isolation/restricted communication.
+
+Operational:
+High risk.
+
+Affected:
+
+Backend
+PostgreSQL
+possibly Frontend
+
+Confidence:
+
+High because infrastructure + application + runtime evidence agree.
+
+Gate:
+
+RISKY.
+
+Remediation:
+
+Find minimal rule that preserves necessary Backend→PostgreSQL communication while maintaining security restrictions.
+
+Verification:
+
+Apply change in Kind.
+
+Run workload.
+
+Observe runtime.
+
+Compare:
+
+Predicted:
+Backend database communication fails.
+
+Actual:
+Backend database communication fails.
+
+Prediction:
+Correct.
+
+Store experiment result.
+
+
+============================================================
+40. IMPORTANT EDGE CASES
+============================================================
+
+The system must consider:
+
+1. Dependency exists in code but was not exercised at runtime.
+
+2. Runtime dependency exists but infrastructure evidence is incomplete.
+
+3. Infrastructure configuration says communication is allowed but runtime shows no traffic.
+
+4. Different evidence sources conflict.
+
+5. Telemetry is missing.
+
+6. Service is conditionally dependent on another service.
+
+7. Security change affects multiple components.
+
+8. Security improves while availability decreases.
+
+9. A broad deny rule blocks unrelated functionality.
+
+10. A remediation passes a scanner but is semantically wrong.
+
+11. Multiple services share a database.
+
+12. NetworkPolicy selectors match more pods than expected.
+
+13. Change affects ingress and egress differently.
+
+14. IAM permission is removed but actual usage is unknown.
+
+15. Runtime evidence is stale.
+
+16. Evidence confidence should depend on source and quality.
+
+17. The system should abstain when confidence is insufficient.
+
+
+============================================================
+41. CORE PRINCIPLE
+============================================================
+
+The strongest conceptual principle of the project is:
+
+“Security changes should be evaluated not only by whether they improve security, but also by whether they unintentionally break required system behavior, and the decision should be proportional to the quality and completeness of the available evidence.”
+
+The system therefore tries to balance:
+
+SECURITY
+vs
+OPERATIONAL SAFETY
+vs
+EVIDENCE CONFIDENCE
+
+
+============================================================
+42. CURRENT IMMEDIATE NEXT STEP
+============================================================
+
+The immediate implementation target is NOT the entire research platform.
+
+Start with:
+
+Windows
+→ WSL2
+→ Ubuntu
+→ Docker
+→ Kind
+→ Kubernetes
+→ Frontend
+→ Backend
+→ PostgreSQL
+→ NetworkPolicy
+→ intentionally break Backend→PostgreSQL
+
+Then verify the failure manually.
+
+After that, begin the evidence collection system.
+
+
+============================================================
+43. HOW TO CONTINUE THIS PROJECT IN A NEW CHAT
+============================================================
+
+When I start a new chat, assume all of the above context is active.
+
+Do not ask me to explain the project from scratch.
+
+If I ask something such as:
+
+“Continue implementation”
+
+“Give me Kiro prompt”
+
+“Build the evidence extractor”
+
+“Explain the architecture”
+
+“Which technology should I learn?”
+
+“Help me implement NetworkPolicy”
+
+“Continue from where we stopped”
+
+“Write the next Kiro spec”
+
+“Help with the paper”
+
+“Check my research gap”
+
+“Explain this code”
+
+then use this context automatically.
+
+If something is genuinely not defined in this context, ask only for the missing detail.
+
+Do not redesign the project unnecessarily.
+
+Always preserve:
+
+- research scope
+- three initial change categories
+- infrastructure/application/runtime evidence
+- unified evidence graph
+- impact prediction
+- confidence
+- SAFE/RISKY/INSUFFICIENT evidence gate
+- minimal remediation
+- controlled verification
+- prediction-vs-reality
+- reproducible local experiments
+- open-source stack
+- conservative novelty claims
+
+
+============================================================
+44. PREFERRED EXPLANATION STYLE
+============================================================
+
+I am still learning some of the technologies.
+
+When explaining implementation:
+
+- explain from basics
+- use simple language first
+- then give technical detail
+- give step-by-step instructions
+- explain why each step is needed
+- give commands exactly
+- explain expected output
+- include common errors and fixes
+- do not jump directly to advanced abstractions
+- provide complete code when requested
+- keep code understandable
+- explain Kiro-generated code so I can defend it in viva
+
+For DSA/programming-style explanations, I generally prefer simple logic and step-by-step reasoning rather than unnecessarily advanced solutions.
+
+For research/project explanations, I want deep, natural-language explanations that I can use while talking to professors/reviewers.
+
+
+============================================================
+45. FINAL PROJECT STORY FOR PRESENTATION
+============================================================
+
+The simplest way to explain the project is:
+
+“Cloud security changes are not isolated from application behavior. A security rule that looks correct from the infrastructure perspective can unintentionally break a service dependency. Our project therefore combines infrastructure configuration, application dependencies, and runtime observations into a unified evidence graph. Before applying a proposed security change, the system predicts its security and operational impact and reports the affected components along with confidence. If the evidence is insufficient, the system abstains instead of making an unsupported decision. If the change is risky, it can attempt a minimal remediation. Finally, the proposed change is executed in a controlled local Kubernetes environment and the predicted result is compared with the actual runtime behavior. This allows us to experimentally evaluate whether combining heterogeneous evidence improves cloud-security change-impact prediction.”
+
+That is the core project story.
+
+
+============================================================
+END OF MASTER CONTEXT
+============================================================
