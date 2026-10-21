@@ -128,9 +128,7 @@ def get_direct_impacts(
     return impacts, not_ready_components
 
 
-def check_readiness_coupling(
-    graph: nx.MultiDiGraph, src: str, dst: str
-) -> bool:
+def check_readiness_coupling(graph: nx.MultiDiGraph, src: str, dst: str) -> bool:
     """Check if source component is readiness-coupled to destination.
 
     Per §8.3: A component is readiness-coupled if it has a READINESS_COUPLED edge.

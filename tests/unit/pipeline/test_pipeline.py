@@ -144,7 +144,9 @@ def test_get_git_sha():
 
 @pytest.mark.unit
 @pytest.mark.skip(reason="Requires G1 golden fixture to be created by P2")
-def test_analyze_g1_risky(load_g1: EvidenceBundle, load_change_m2: ChangeSpec, config_path: Path):
+def test_analyze_g1_risky(
+    load_g1: EvidenceBundle, load_change_m2: ChangeSpec, config_path: Path
+):
     """Test analyze with G1 (full evidence) → RISKY prediction.
 
     G1 has full infrastructure + application + runtime evidence showing

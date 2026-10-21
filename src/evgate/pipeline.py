@@ -43,7 +43,11 @@ def get_git_sha() -> str:
             timeout=5,
         )
         return result.stdout.strip()
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.TimeoutExpired,
+    ):
         return "unknown"
 
 
@@ -97,8 +101,16 @@ def get_evidence_mask(evidence_config: str) -> set[EvidenceType]:
         "A": {EvidenceType.INFRASTRUCTURE},
         "B": {EvidenceType.INFRASTRUCTURE, EvidenceType.APPLICATION},
         "C": {EvidenceType.INFRASTRUCTURE, EvidenceType.RUNTIME},
-        "D": {EvidenceType.INFRASTRUCTURE, EvidenceType.APPLICATION, EvidenceType.RUNTIME},
-        "D_NOGATE": {EvidenceType.INFRASTRUCTURE, EvidenceType.APPLICATION, EvidenceType.RUNTIME},
+        "D": {
+            EvidenceType.INFRASTRUCTURE,
+            EvidenceType.APPLICATION,
+            EvidenceType.RUNTIME,
+        },
+        "D_NOGATE": {
+            EvidenceType.INFRASTRUCTURE,
+            EvidenceType.APPLICATION,
+            EvidenceType.RUNTIME,
+        },
     }
 
     if evidence_config not in masks:
@@ -175,7 +187,10 @@ def analyze(
 
                     # Compute belief from edge
                     belief = compute_belief_from_graph_edge(
-                        edge_data, config["reliability"], mask, config.get("top_k_per_type", 3)
+                        edge_data,
+                        config["reliability"],
+                        mask,
+                        config.get("top_k_per_type", 3),
                     )
 
                     # Check if belief meets tau_pos threshold
@@ -206,12 +221,16 @@ def analyze(
     {imp.component: imp for imp in operational_impact_list}
 
     # Step 7: Security impact analysis
-    security_impact, security_delta, security_details = compute_security_impact(change, graph)
+    security_impact, security_delta, security_details = compute_security_impact(
+        change, graph
+    )
 
     # Step 7.5: Compute operational risk and label
     from .prediction import apply_risk_threshold, compute_operational_risk
 
-    operational_risk, operational_label = compute_operational_risk(operational_impact_list)
+    operational_risk, operational_label = compute_operational_risk(
+        operational_impact_list
+    )
     operational_label = apply_risk_threshold(
         operational_risk, operational_label, config["tau_risk"]
     )
@@ -267,7 +286,10 @@ def analyze(
                 for key in graph[effect.subject][effect.object]:
                     edge_data = graph[effect.subject][effect.object][key]
                     belief = compute_belief_from_graph_edge(
-                        edge_data, config["reliability"], mask, config.get("top_k_per_type", 3)
+                        edge_data,
+                        config["reliability"],
+                        mask,
+                        config.get("top_k_per_type", 3),
                     )
                     beliefs.append(belief)
 

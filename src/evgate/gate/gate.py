@@ -43,7 +43,11 @@ def check_conflicts_on_paths(
 
     # Check path effects
     for effect in change.effects:
-        if effect.kind == "path" and effect.before == "allowed" and effect.after == "denied":
+        if (
+            effect.kind == "path"
+            and effect.before == "allowed"
+            and effect.after == "denied"
+        ):
             src = effect.src
             dst = effect.dst
 
@@ -77,7 +81,11 @@ def check_positive_evidence(
     """
     # Check path effects that deny access
     for effect in change.effects:
-        if effect.kind == "path" and effect.before == "allowed" and effect.after == "denied":
+        if (
+            effect.kind == "path"
+            and effect.before == "allowed"
+            and effect.after == "denied"
+        ):
             src = effect.src
             dst = effect.dst
 
@@ -158,9 +166,7 @@ def generate_evidence_requests(
 
     # If absence not informative
     if ReasonCode.ABSENCE_NOT_INFORMATIVE in reasons:
-        coverage_score = (
-            bundle.coverage.endpoint_coverage if bundle.coverage else 0.0
-        )
+        coverage_score = bundle.coverage.endpoint_coverage if bundle.coverage else 0.0
         if coverage_score < 0.8:
             requests.append(
                 EvidenceRequest(
@@ -269,7 +275,10 @@ def apply_evidence_gate(
             )
 
     # Step 4: No positive dependency found - check security impact
-    if security_impact == SecurityImpact.DEGRADES and change.direction in ("loosens", "mixed"):
+    if security_impact == SecurityImpact.DEGRADES and change.direction in (
+        "loosens",
+        "mixed",
+    ):
         return GateDecision(
             decision=Decision.RISKY,
             reasons=[ReasonCode.SECURITY_DEGRADES],

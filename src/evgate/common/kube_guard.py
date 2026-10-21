@@ -9,6 +9,7 @@ from typing import Optional
 
 class KubeContextError(Exception):
     """Raised when attempting to run in non-Kind context."""
+
     pass
 
 
@@ -19,7 +20,7 @@ def get_current_context() -> Optional[str]:
             ["kubectl", "config", "current-context"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError:
@@ -29,17 +30,17 @@ def get_current_context() -> Optional[str]:
 def assert_local_kind_context():
     """
     Safety guard: Assert we're using a local Kind cluster.
-    
+
     Raises:
         KubeContextError: If not in a Kind context
-    
+
     This prevents accidentally running experiments against production clusters.
     """
     context = get_current_context()
-    
+
     if context is None:
         raise KubeContextError("No kubectl context found. Is kubectl configured?")
-    
+
     # Kind contexts typically contain 'kind-' prefix
     if "kind-" not in context.lower():
         raise KubeContextError(
@@ -48,17 +49,17 @@ def assert_local_kind_context():
             f"accidental production changes. "
             f"\nTo create a Kind cluster: kind create cluster --name poc-cluster"
         )
-    
+
     print(f"✓ Safety check passed: Using Kind context '{context}'")
 
 
 def confirm_destructive_action(action_description: str) -> bool:
     """
     Prompt user to confirm a destructive action.
-    
+
     Args:
         action_description: Description of the action to confirm
-    
+
     Returns:
         True if user confirms, False otherwise
     """

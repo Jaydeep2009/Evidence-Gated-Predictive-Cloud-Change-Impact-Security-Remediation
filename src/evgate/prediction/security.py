@@ -24,9 +24,7 @@ class SecurityImpact(StrEnum):
     DEGRADES = "degrades"
 
 
-def is_sensitive_component(
-    graph: nx.MultiDiGraph, component: str
-) -> bool:
+def is_sensitive_component(graph: nx.MultiDiGraph, component: str) -> bool:
     """Check if a component is marked as sensitive.
 
     Per §8.3: Sensitive = label tier=data OR holds credentials
@@ -78,9 +76,7 @@ def compute_path_exposure(
     exposure = 0
 
     # Find all sensitive components
-    sensitive = {
-        node for node in graph.nodes() if is_sensitive_component(graph, node)
-    }
+    sensitive = {node for node in graph.nodes() if is_sensitive_component(graph, node)}
 
     if not sensitive:
         return 0
