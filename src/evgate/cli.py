@@ -157,8 +157,8 @@ def cmd_show(args: argparse.Namespace) -> int:
             icon = {"unavailable": "❌", "degraded": "⚠️", "isolated": "🔒", "none": "✅"}.get(comp.impact, "❔")
             print(f"  {icon} {comp.component}: {comp.impact}")
 
-        if decision.explanation:
-            print(f"\n💡 {decision.explanation}")
+        if hasattr(decision, 'reasoning') and decision.reasoning:
+            print(f"\n💡 {decision.reasoning}")
 
         return 0
 

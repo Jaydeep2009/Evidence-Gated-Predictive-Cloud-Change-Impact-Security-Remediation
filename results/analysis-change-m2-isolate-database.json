@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "change_id": "change-m2-isolate-database",
+  "evidence_config": "D",
+  "gate_enabled": true,
+  "prediction": {
+    "security_impact": "improves",
+    "security_delta": -1.0,
+    "operational_risk": 0.9450000000000001,
+    "operational_label": "high",
+    "affected_components": [
+      {
+        "component": "component:poc-app/backend",
+        "impact": "unavailable",
+        "mechanism": "readiness_coupled",
+        "probability": 0.9,
+        "evidence_ids": []
+      },
+      {
+        "component": "component:poc-app/database",
+        "impact": "degraded",
+        "mechanism": "direct_path_blocked",
+        "probability": 0.9,
+        "evidence_ids": []
+      }
+    ],
+    "belief": 0.0,
+    "sufficiency": 0.0,
+    "confidence": 0.0,
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [],
+    "rationale": []
+  },
+  "gate": {
+    "decision": "INSUFFICIENT_EVIDENCE",
+    "reasons": [
+      "LOW_SUFFICIENCY"
+    ],
+    "thresholds_used": {
+      "sufficiency": 0.0,
+      "tau_suff_pos": 0.6
+    },
+    "evidence_requests": []
+  },
+  "graph_ref": null,
+  "remediation": null,
+  "versions": {
+    "git_sha": "777a6831",
+    "evgate_version": "1.0.0",
+    "config_file": "config\\analysis.yaml"
+  }
+}
