@@ -88,10 +88,14 @@ class StatisticalAnalyzer:
         # Build contingency table
         # n00: both wrong, n01: m1 wrong m2 correct, n10: m1 correct m2 wrong, n11: both correct
         n01 = sum(
-            1 for m1, m2 in zip(method1_correct, method2_correct, strict=False) if not m1 and m2
+            1
+            for m1, m2 in zip(method1_correct, method2_correct, strict=False)
+            if not m1 and m2
         )
         n10 = sum(
-            1 for m1, m2 in zip(method1_correct, method2_correct, strict=False) if m1 and not m2
+            1
+            for m1, m2 in zip(method1_correct, method2_correct, strict=False)
+            if m1 and not m2
         )
 
         # McNemar statistic (with continuity correction)
@@ -223,8 +227,12 @@ class StatisticalAnalyzer:
         """
 
         # McNemar's test on predictions
-        method1_correct = [p == g for p, g in zip(method1_predictions, ground_truth, strict=False)]
-        method2_correct = [p == g for p, g in zip(method2_predictions, ground_truth, strict=False)]
+        method1_correct = [
+            p == g for p, g in zip(method1_predictions, ground_truth, strict=False)
+        ]
+        method2_correct = [
+            p == g for p, g in zip(method2_predictions, ground_truth, strict=False)
+        ]
 
         mcnemar_result = self.mcnemar_test(method1_correct, method2_correct)
 

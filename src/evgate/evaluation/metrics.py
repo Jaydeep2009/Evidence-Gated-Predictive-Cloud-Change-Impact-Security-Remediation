@@ -89,7 +89,9 @@ class MetricsCalculator:
         metrics["f1_macro"] = round(np.mean(f1s), 4)
 
         # Accuracy
-        correct = sum(1 for p, g in zip(predictions, ground_truth, strict=False) if p == g)
+        correct = sum(
+            1 for p, g in zip(predictions, ground_truth, strict=False) if p == g
+        )
         metrics["accuracy"] = round(correct / len(predictions), 4)
 
         return metrics
@@ -121,7 +123,9 @@ class MetricsCalculator:
         )
 
         # End-to-end success: both detection AND remediation
-        e2e_success = sum(1 for d, r in zip(detections, remediations, strict=False) if d and r)
+        e2e_success = sum(
+            1 for d, r in zip(detections, remediations, strict=False) if d and r
+        )
         e2e_success_rate = e2e_success / len(detections) if len(detections) > 0 else 0.0
 
         return {
@@ -160,7 +164,9 @@ class MetricsCalculator:
             )
 
         # Convert predictions to correctness (1 if correct, 0 if wrong)
-        correctness = [1 if p == g else 0 for p, g in zip(predictions, ground_truth, strict=False)]
+        correctness = [
+            1 if p == g else 0 for p, g in zip(predictions, ground_truth, strict=False)
+        ]
 
         # Create bins
         bin_boundaries = np.linspace(0, 1, n_bins + 1)
