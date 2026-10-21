@@ -27,6 +27,9 @@ class ReasonCode(str):
     NO_RUNTIME_EVIDENCE = "NO_RUNTIME_EVIDENCE"
     UNSUPPORTED_CHANGE = "UNSUPPORTED_CHANGE"
 
+    # For evaluation mode
+    FORCED_DECISION = "FORCED_DECISION"
+
 
 class EvidenceRequest(BaseModel):
     """A request for additional evidence to improve decision confidence."""
