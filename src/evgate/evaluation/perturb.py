@@ -3,10 +3,10 @@ P4-09: Evidence Perturbation
 Systematically degrades evidence to test robustness.
 """
 
-from typing import Dict, Any, List
-from enum import Enum
 import copy
 import random
+from enum import Enum
+from typing import Any
 
 
 class PerturbationCondition(Enum):
@@ -32,8 +32,8 @@ class EvidencePerturber:
         random.seed(seed)
 
     def apply_condition(
-        self, evidence: Dict[str, Any], condition: PerturbationCondition
-    ) -> Dict[str, Any]:
+        self, evidence: dict[str, Any], condition: PerturbationCondition
+    ) -> dict[str, Any]:
         """
         Apply perturbation condition to evidence.
 
@@ -65,25 +65,25 @@ class EvidencePerturber:
 
         return evidence
 
-    def _remove_app_logs(self, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def _remove_app_logs(self, evidence: dict[str, Any]) -> dict[str, Any]:
         """EC1: Remove application logs."""
         perturbed = copy.deepcopy(evidence)
         perturbed["application_logs"] = []
         return perturbed
 
-    def _remove_runtime_metrics(self, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def _remove_runtime_metrics(self, evidence: dict[str, Any]) -> dict[str, Any]:
         """EC2: Remove runtime metrics."""
         perturbed = copy.deepcopy(evidence)
         perturbed["runtime_metrics"] = {}
         return perturbed
 
-    def _remove_infra_data(self, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def _remove_infra_data(self, evidence: dict[str, Any]) -> dict[str, Any]:
         """EC3: Remove infrastructure data."""
         perturbed = copy.deepcopy(evidence)
         perturbed["infrastructure"] = {}
         return perturbed
 
-    def _partial_all(self, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def _partial_all(self, evidence: dict[str, Any]) -> dict[str, Any]:
         """EC4: Keep only 50% of each evidence type."""
         perturbed = copy.deepcopy(evidence)
 
@@ -108,7 +108,7 @@ class EvidencePerturber:
 
         return perturbed
 
-    def _add_noise(self, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def _add_noise(self, evidence: dict[str, Any]) -> dict[str, Any]:
         """EC5: Add 20% random noise to all evidence."""
         perturbed = copy.deepcopy(evidence)
 
@@ -135,8 +135,8 @@ class EvidencePerturber:
         return perturbed
 
     def generate_all_conditions(
-        self, evidence: Dict[str, Any]
-    ) -> Dict[PerturbationCondition, Dict[str, Any]]:
+        self, evidence: dict[str, Any]
+    ) -> dict[PerturbationCondition, dict[str, Any]]:
         """
         Generate evidence under all perturbation conditions.
 

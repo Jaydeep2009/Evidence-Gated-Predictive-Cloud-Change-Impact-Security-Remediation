@@ -3,8 +3,9 @@ P4-05: Network Remediation
 Generates NetworkPolicy fixes for connectivity issues.
 """
 
-from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
+from typing import Any
+
 import yaml
 
 
@@ -15,7 +16,7 @@ class NetworkRemediationSuggestion:
     issue_type: str  # "missing_ingress", "missing_egress", "overly_restrictive"
     affected_pod: str
     affected_namespace: str
-    suggested_policy: Dict[str, Any]
+    suggested_policy: dict[str, Any]
     rationale: str
     confidence: float  # 0.0 to 1.0
 
@@ -87,7 +88,7 @@ class NetworkRemediator:
         dest_namespace: str,
         dest_port: int,
         protocol: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate a NetworkPolicy allowing specific traffic."""
 
         policy_name = f"allow-{source_pod}-to-{dest_service}"
@@ -116,8 +117,8 @@ class NetworkRemediator:
         }
 
     def remediate_scenario(
-        self, scenario_id: str, ground_truth: Dict[str, Any]
-    ) -> List[NetworkRemediationSuggestion]:
+        self, scenario_id: str, ground_truth: dict[str, Any]
+    ) -> list[NetworkRemediationSuggestion]:
         """
         Generate remediations for a complete scenario based on ground truth.
 

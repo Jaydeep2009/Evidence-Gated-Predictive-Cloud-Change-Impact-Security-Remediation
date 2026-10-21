@@ -3,8 +3,8 @@ P4-07: Tofu (OpenTofu/Terraform) Remediation
 Generates IaC configuration fixes.
 """
 
-from typing import Dict, Any, List
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -34,7 +34,7 @@ class TofuRemediator:
         self,
         resource_type: str,
         resource_name: str,
-        required_attributes: Dict[str, Any],
+        required_attributes: dict[str, Any],
     ) -> TofuRemediationSuggestion:
         """
         Suggest Tofu config for a missing resource.
@@ -68,7 +68,7 @@ class TofuRemediator:
         )
 
     def _generate_resource_hcl(
-        self, resource_type: str, resource_name: str, attributes: Dict[str, Any]
+        self, resource_type: str, resource_name: str, attributes: dict[str, Any]
     ) -> str:
         """Generate HCL configuration for a resource."""
 
@@ -95,8 +95,8 @@ class TofuRemediator:
         return "\n".join(hcl_lines)
 
     def remediate_scenario(
-        self, scenario_id: str, ground_truth: Dict[str, Any]
-    ) -> List[TofuRemediationSuggestion]:
+        self, scenario_id: str, ground_truth: dict[str, Any]
+    ) -> list[TofuRemediationSuggestion]:
         """
         Generate Tofu remediations for a scenario.
 

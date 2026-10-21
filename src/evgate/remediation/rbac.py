@@ -3,8 +3,9 @@ P4-06: RBAC Remediation
 Generates Role/RoleBinding fixes for permission issues.
 """
 
-from typing import Dict, Any, List
 from dataclasses import dataclass
+from typing import Any
+
 import yaml
 
 
@@ -15,8 +16,8 @@ class RBACRemediationSuggestion:
     issue_type: str  # "missing_role", "missing_binding", "insufficient_permissions"
     affected_service_account: str
     affected_namespace: str
-    suggested_role: Optional[Dict[str, Any]] = None
-    suggested_binding: Optional[Dict[str, Any]] = None
+    suggested_role: dict[str, Any] | None = None
+    suggested_binding: dict[str, Any] | None = None
     rationale: str = ""
     confidence: float = 0.8
 
@@ -88,10 +89,10 @@ class RBACRemediator:
         self,
         name: str,
         namespace: str,
-        verbs: List[str],
-        resources: List[str],
+        verbs: list[str],
+        resources: list[str],
         api_group: str = "",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate a Role manifest."""
 
         return {
@@ -105,7 +106,7 @@ class RBACRemediator:
 
     def _generate_role_binding(
         self, name: str, namespace: str, role_name: str, service_account: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate a RoleBinding manifest."""
 
         return {
@@ -127,8 +128,8 @@ class RBACRemediator:
         }
 
     def remediate_scenario(
-        self, scenario_id: str, ground_truth: Dict[str, Any]
-    ) -> List[RBACRemediationSuggestion]:
+        self, scenario_id: str, ground_truth: dict[str, Any]
+    ) -> list[RBACRemediationSuggestion]:
         """
         Generate RBAC remediations for a scenario.
 

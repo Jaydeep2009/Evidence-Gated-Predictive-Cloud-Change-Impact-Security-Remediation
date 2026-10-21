@@ -3,7 +3,8 @@ P4-12: Statistical Analysis
 Bootstrap confidence intervals, significance tests.
 """
 
-from typing import List, Dict, Any, Tuple
+from typing import Any
+
 import numpy as np
 from scipy import stats as scipy_stats
 
@@ -26,8 +27,8 @@ class StatisticalAnalyzer:
         self.rng = np.random.RandomState(seed)
 
     def bootstrap_confidence_interval(
-        self, data: List[float], statistic_fn=np.mean
-    ) -> Tuple[float, float, float]:
+        self, data: list[float], statistic_fn=np.mean
+    ) -> tuple[float, float, float]:
         """
         Compute bootstrap confidence interval.
 
@@ -66,8 +67,8 @@ class StatisticalAnalyzer:
         )
 
     def mcnemar_test(
-        self, method1_correct: List[bool], method2_correct: List[bool]
-    ) -> Dict[str, Any]:
+        self, method1_correct: list[bool], method2_correct: list[bool]
+    ) -> dict[str, Any]:
         """
         McNemar's test for comparing two paired classifiers.
 
@@ -87,10 +88,10 @@ class StatisticalAnalyzer:
         # Build contingency table
         # n00: both wrong, n01: m1 wrong m2 correct, n10: m1 correct m2 wrong, n11: both correct
         n01 = sum(
-            1 for m1, m2 in zip(method1_correct, method2_correct) if not m1 and m2
+            1 for m1, m2 in zip(method1_correct, method2_correct, strict=False) if not m1 and m2
         )
         n10 = sum(
-            1 for m1, m2 in zip(method1_correct, method2_correct) if m1 and not m2
+            1 for m1, m2 in zip(method1_correct, method2_correct, strict=False) if m1 and not m2
         )
 
         # McNemar statistic (with continuity correction)
@@ -125,8 +126,8 @@ class StatisticalAnalyzer:
         }
 
     def wilcoxon_signed_rank_test(
-        self, method1_scores: List[float], method2_scores: List[float]
-    ) -> Dict[str, Any]:
+        self, method1_scores: list[float], method2_scores: list[float]
+    ) -> dict[str, Any]:
         """
         Wilcoxon signed-rank test for paired samples.
 
@@ -165,7 +166,7 @@ class StatisticalAnalyzer:
             "interpretation": interpretation,
         }
 
-    def effect_size_cohen_d(self, group1: List[float], group2: List[float]) -> float:
+    def effect_size_cohen_d(self, group1: list[float], group2: list[float]) -> float:
         """
         Compute Cohen's d effect size.
 
@@ -201,12 +202,12 @@ class StatisticalAnalyzer:
 
     def compare_methods(
         self,
-        method1_predictions: List[str],
-        method2_predictions: List[str],
-        ground_truth: List[str],
-        method1_scores: List[float] = None,
-        method2_scores: List[float] = None,
-    ) -> Dict[str, Any]:
+        method1_predictions: list[str],
+        method2_predictions: list[str],
+        ground_truth: list[str],
+        method1_scores: list[float] = None,
+        method2_scores: list[float] = None,
+    ) -> dict[str, Any]:
         """
         Comprehensive comparison of two methods.
 
@@ -222,8 +223,8 @@ class StatisticalAnalyzer:
         """
 
         # McNemar's test on predictions
-        method1_correct = [p == g for p, g in zip(method1_predictions, ground_truth)]
-        method2_correct = [p == g for p, g in zip(method2_predictions, ground_truth)]
+        method1_correct = [p == g for p, g in zip(method1_predictions, ground_truth, strict=False)]
+        method2_correct = [p == g for p, g in zip(method2_predictions, ground_truth, strict=False)]
 
         mcnemar_result = self.mcnemar_test(method1_correct, method2_correct)
 

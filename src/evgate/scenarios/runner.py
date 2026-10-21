@@ -6,14 +6,15 @@ Executes scenarios and collects ground truth evidence.
 import json
 import subprocess
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, asdict
+from typing import Any
+
 import requests
 
-from .loader import Scenario, ProbeConfig
 from ..common.kube_guard import assert_local_kind_context
+from .loader import ProbeConfig, Scenario
 
 
 @dataclass
@@ -22,11 +23,11 @@ class ProbeResult:
 
     url: str
     method: str
-    status_code: Optional[int]
+    status_code: int | None
     success: bool
     content_matched: bool
     response_time_ms: float
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: str = ""
 
     def __post_init__(self):
@@ -44,20 +45,20 @@ class GroundTruthResult:
     cluster_context: str
 
     # Probe results
-    probes: List[ProbeResult]
+    probes: list[ProbeResult]
     all_probes_passed: bool
 
     # System state
-    pod_status: Dict[str, Any]
-    service_status: Dict[str, Any]
-    policy_status: Dict[str, Any]
+    pod_status: dict[str, Any]
+    service_status: dict[str, Any]
+    policy_status: dict[str, Any]
 
     # Timing
     setup_duration_sec: float
     probe_duration_sec: float
     total_duration_sec: float
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return asdict(self)
 
@@ -176,7 +177,7 @@ class ScenarioRunner:
 
         return result
 
-    def _apply_policies(self, policy_files: List[str]):
+    def _apply_policies(self, policy_files: list[str]):
         """Apply Kubernetes policy manifests."""
         if not policy_files:
             print("  No policies to apply")
@@ -245,7 +246,7 @@ class ScenarioRunner:
 
         print(f"  ⚠️  Timeout waiting for pods ({self.max_wait_sec}s)")
 
-    def _execute_probes(self, probes: List[ProbeConfig]) -> List[ProbeResult]:
+    def _execute_probes(self, probes: list[ProbeConfig]) -> list[ProbeResult]:
         """Execute HTTP probes and verify results."""
         results = []
 
@@ -299,7 +300,7 @@ class ScenarioRunner:
 
         return results
 
-    def _get_pod_status(self) -> Dict[str, Any]:
+    def _get_pod_status(self) -> dict[str, Any]:
         """Get status of all pods in namespace."""
         result = subprocess.run(
             ["kubectl", "get", "pods", "-n", self.namespace, "-o", "json"],
@@ -311,7 +312,7 @@ class ScenarioRunner:
             return json.loads(result.stdout)
         return {"error": result.stderr}
 
-    def _get_service_status(self) -> Dict[str, Any]:
+    def _get_service_status(self) -> dict[str, Any]:
         """Get status of all services in namespace."""
         result = subprocess.run(
             ["kubectl", "get", "svc", "-n", self.namespace, "-o", "json"],
@@ -323,7 +324,7 @@ class ScenarioRunner:
             return json.loads(result.stdout)
         return {"error": result.stderr}
 
-    def _get_policy_status(self) -> Dict[str, Any]:
+    def _get_policy_status(self) -> dict[str, Any]:
         """Get status of network policies in namespace."""
         result = subprocess.run(
             ["kubectl", "get", "networkpolicies", "-n", self.namespace, "-o", "json"],

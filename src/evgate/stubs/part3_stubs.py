@@ -4,12 +4,12 @@ Integration stubs for Part 3 (Core Engine: Analyzer, Reachability, Permissions).
 Replace these with real implementations when teammates' code is available.
 """
 
-from typing import Dict, Any, List
+from typing import Any
 
 
 def stub_analyze(
-    change_config: Dict[str, Any], evidence: Dict[str, Any]
-) -> Dict[str, Any]:
+    change_config: dict[str, Any], evidence: dict[str, Any]
+) -> dict[str, Any]:
     """
     Stub for Part 3 core analyzer.
 
@@ -63,8 +63,8 @@ class StubReachabilityEngine:
         pass
 
     def analyze_reachability(
-        self, source: str, dest: str, network_policies: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, source: str, dest: str, network_policies: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Analyze if source can reach dest given network policies."""
 
         # Stub: assume blocked if any policies exist
@@ -80,8 +80,8 @@ class StubReachabilityEngine:
         }
 
     def find_blocking_policies(
-        self, source: str, dest: str, policies: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, source: str, dest: str, policies: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Find policies that block source→dest traffic."""
         # Stub: return all policies
         return policies
@@ -104,7 +104,7 @@ class StubPermissionEngine:
         required_action: str,
         resource_type: str,
         namespace: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze if service account has required permissions."""
 
         # Stub: assume no permissions
@@ -117,13 +117,13 @@ class StubPermissionEngine:
 
     def find_missing_permissions(
         self, service_account: str, namespace: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Find missing permissions for a service account."""
         # Stub: return empty list
         return []
 
 
-def stub_parse_change(change_yaml: str) -> Dict[str, Any]:
+def stub_parse_change(change_yaml: str) -> dict[str, Any]:
     """
     Stub for parsing change configuration.
 

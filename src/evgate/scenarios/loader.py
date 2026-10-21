@@ -4,7 +4,8 @@ Loads experiment scenarios from YAML files with validation.
 """
 
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 import yaml
 from pydantic import BaseModel, Field, validator
 
@@ -15,7 +16,7 @@ class ProbeConfig(BaseModel):
     url: str
     method: str = "GET"
     expected_status: int = 200
-    expected_content: Optional[str] = None
+    expected_content: str | None = None
     timeout: int = 10
 
 
@@ -35,15 +36,15 @@ class Scenario(BaseModel):
     change_type: str = Field(
         ..., description="Type of change: policy, deployment, service"
     )
-    before_config: Optional[Dict[str, Any]] = Field(
+    before_config: dict[str, Any] | None = Field(
         None, description="Initial configuration state"
     )
-    after_config: Optional[Dict[str, Any]] = Field(
+    after_config: dict[str, Any] | None = Field(
         None, description="Modified configuration state"
     )
 
     # Expected impact
-    expected_impacts: List[str] = Field(
+    expected_impacts: list[str] = Field(
         default_factory=list, description="List of expected impacts"
     )
     expected_behavior: str = Field(
@@ -51,10 +52,10 @@ class Scenario(BaseModel):
     )
 
     # Ground truth collection
-    probes: List[ProbeConfig] = Field(
+    probes: list[ProbeConfig] = Field(
         default_factory=list, description="Probes to verify behavior"
     )
-    policy_files: List[str] = Field(
+    policy_files: list[str] = Field(
         default_factory=list, description="Kubernetes policy manifest paths"
     )
 
@@ -97,12 +98,12 @@ class ScenarioLoader:
         if not filepath.exists():
             raise FileNotFoundError(f"Scenario file not found: {filepath}")
 
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         return Scenario(**data)
 
-    def load_all(self) -> List[Scenario]:
+    def load_all(self) -> list[Scenario]:
         """Load all scenario YAML files in the directory."""
         scenarios = []
 
@@ -115,12 +116,12 @@ class ScenarioLoader:
 
         return scenarios
 
-    def load_by_category(self, category: str) -> List[Scenario]:
+    def load_by_category(self, category: str) -> list[Scenario]:
         """Load all scenarios matching a specific category."""
         all_scenarios = self.load_all()
         return [s for s in all_scenarios if s.category == category]
 
-    def get_scenario_by_id(self, scenario_id: str) -> Optional[Scenario]:
+    def get_scenario_by_id(self, scenario_id: str) -> Scenario | None:
         """Find a scenario by its ID."""
         all_scenarios = self.load_all()
         for scenario in all_scenarios:
@@ -128,7 +129,7 @@ class ScenarioLoader:
                 return scenario
         return None
 
-    def validate_all(self) -> Dict[str, Any]:
+    def validate_all(self) -> dict[str, Any]:
         """
         Validate all scenarios and return a summary report.
 

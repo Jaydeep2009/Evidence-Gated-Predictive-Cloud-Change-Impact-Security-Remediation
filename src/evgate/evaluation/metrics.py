@@ -3,9 +3,9 @@ P4-11: Metrics Calculation
 Computes classification, component, and calibration metrics.
 """
 
-from typing import List, Dict, Any, Tuple
+from typing import Any
+
 import numpy as np
-from collections import defaultdict
 
 
 class MetricsCalculator:
@@ -22,8 +22,8 @@ class MetricsCalculator:
         pass
 
     def compute_classification_metrics(
-        self, predictions: List[str], ground_truth: List[str], labels: List[str] = None
-    ) -> Dict[str, float]:
+        self, predictions: list[str], ground_truth: list[str], labels: list[str] = None
+    ) -> dict[str, float]:
         """
         Compute classification metrics.
 
@@ -48,22 +48,22 @@ class MetricsCalculator:
         for label in labels:
             tp = sum(
                 1
-                for p, g in zip(predictions, ground_truth)
+                for p, g in zip(predictions, ground_truth, strict=False)
                 if p == label and g == label
             )
             fp = sum(
                 1
-                for p, g in zip(predictions, ground_truth)
+                for p, g in zip(predictions, ground_truth, strict=False)
                 if p == label and g != label
             )
             fn = sum(
                 1
-                for p, g in zip(predictions, ground_truth)
+                for p, g in zip(predictions, ground_truth, strict=False)
                 if p != label and g == label
             )
-            tn = sum(
+            sum(
                 1
-                for p, g in zip(predictions, ground_truth)
+                for p, g in zip(predictions, ground_truth, strict=False)
                 if p != label and g != label
             )
 
@@ -80,25 +80,25 @@ class MetricsCalculator:
             metrics[f"f1_{label}"] = round(f1, 4)
 
         # Macro-averaged metrics
-        precisions = [metrics[f"precision_{l}"] for l in labels]
-        recalls = [metrics[f"recall_{l}"] for l in labels]
-        f1s = [metrics[f"f1_{l}"] for l in labels]
+        precisions = [metrics[f"precision_{label}"] for label in labels]
+        recalls = [metrics[f"recall_{label}"] for label in labels]
+        f1s = [metrics[f"f1_{label}"] for label in labels]
 
         metrics["precision_macro"] = round(np.mean(precisions), 4)
         metrics["recall_macro"] = round(np.mean(recalls), 4)
         metrics["f1_macro"] = round(np.mean(f1s), 4)
 
         # Accuracy
-        correct = sum(1 for p, g in zip(predictions, ground_truth) if p == g)
+        correct = sum(1 for p, g in zip(predictions, ground_truth, strict=False) if p == g)
         metrics["accuracy"] = round(correct / len(predictions), 4)
 
         return metrics
 
     def compute_component_metrics(
         self,
-        detections: List[bool],  # Was the issue detected?
-        remediations: List[bool],  # Was remediation successful?
-    ) -> Dict[str, float]:
+        detections: list[bool],  # Was the issue detected?
+        remediations: list[bool],  # Was remediation successful?
+    ) -> dict[str, float]:
         """
         Compute component-level metrics.
 
@@ -121,7 +121,7 @@ class MetricsCalculator:
         )
 
         # End-to-end success: both detection AND remediation
-        e2e_success = sum(1 for d, r in zip(detections, remediations) if d and r)
+        e2e_success = sum(1 for d, r in zip(detections, remediations, strict=False) if d and r)
         e2e_success_rate = e2e_success / len(detections) if len(detections) > 0 else 0.0
 
         return {
@@ -132,11 +132,11 @@ class MetricsCalculator:
 
     def compute_calibration_metrics(
         self,
-        confidences: List[float],
-        predictions: List[str],
-        ground_truth: List[str],
+        confidences: list[float],
+        predictions: list[str],
+        ground_truth: list[str],
         n_bins: int = 10,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Compute calibration metrics (ECE and MCE).
 
@@ -160,7 +160,7 @@ class MetricsCalculator:
             )
 
         # Convert predictions to correctness (1 if correct, 0 if wrong)
-        correctness = [1 if p == g else 0 for p, g in zip(predictions, ground_truth)]
+        correctness = [1 if p == g else 0 for p, g in zip(predictions, ground_truth, strict=False)]
 
         # Create bins
         bin_boundaries = np.linspace(0, 1, n_bins + 1)
@@ -170,7 +170,7 @@ class MetricsCalculator:
         ece = 0.0
         mce = 0.0
 
-        for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+        for bin_lower, bin_upper in zip(bin_lowers, bin_uppers, strict=False):
             # Find samples in this bin
             in_bin = [
                 i
@@ -201,8 +201,8 @@ class MetricsCalculator:
         return {"ece": round(ece, 4), "mce": round(mce, 4)}
 
     def confusion_matrix(
-        self, predictions: List[str], ground_truth: List[str], labels: List[str] = None
-    ) -> Dict[str, Any]:
+        self, predictions: list[str], ground_truth: list[str], labels: list[str] = None
+    ) -> dict[str, Any]:
         """
         Compute confusion matrix.
 
@@ -211,14 +211,14 @@ class MetricsCalculator:
         """
 
         if labels is None:
-            labels = sorted(list(set(predictions + ground_truth)))
+            labels = sorted(set(predictions + ground_truth))
 
         n = len(labels)
         matrix = np.zeros((n, n), dtype=int)
 
         label_to_idx = {label: i for i, label in enumerate(labels)}
 
-        for pred, true in zip(predictions, ground_truth):
+        for pred, true in zip(predictions, ground_truth, strict=False):
             i = label_to_idx.get(true, -1)
             j = label_to_idx.get(pred, -1)
             if i >= 0 and j >= 0:

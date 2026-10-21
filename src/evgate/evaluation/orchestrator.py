@@ -4,16 +4,15 @@ Coordinates full evaluation grid: scenarios × configs × conditions.
 """
 
 import json
-from pathlib import Path
-from typing import List, Dict, Any, Optional
 from datetime import datetime
-import itertools
+from pathlib import Path
+from typing import Any
 
-from ..scenarios.loader import ScenarioLoader, Scenario
+from ..scenarios.loader import Scenario, ScenarioLoader
 from ..scenarios.runner import ScenarioRunner
-from .perturb import EvidencePerturber, PerturbationCondition
 from .baselines import BaselineComparator, BaselineMethod
 from .metrics import MetricsCalculator
+from .perturb import EvidencePerturber, PerturbationCondition
 from .stats import StatisticalAnalyzer
 
 
@@ -94,11 +93,11 @@ class EvaluationOrchestrator:
 
     def run_grid(
         self,
-        scenarios: List[Scenario] = None,
-        configs: List[EvaluationConfig] = None,
-        conditions: List[PerturbationCondition] = None,
+        scenarios: list[Scenario] = None,
+        configs: list[EvaluationConfig] = None,
+        conditions: list[PerturbationCondition] = None,
         collect_ground_truth: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Run full evaluation grid.
 
@@ -159,7 +158,7 @@ class EvaluationOrchestrator:
             # Load ground truth
             ground_truth = self._load_ground_truth(scenario.id)
             if not ground_truth:
-                print(f"  ⚠️  No ground truth found, skipping")
+                print("  ⚠️  No ground truth found, skipping")
                 continue
 
             # Extract evidence from ground truth (simplified)
@@ -230,7 +229,7 @@ class EvaluationOrchestrator:
 
         return final_report
 
-    def _collect_ground_truth_for_scenarios(self, scenarios: List[Scenario]):
+    def _collect_ground_truth_for_scenarios(self, scenarios: list[Scenario]):
         """Collect ground truth for all scenarios."""
         for i, scenario in enumerate(scenarios, 1):
             print(f"  [{i}/{len(scenarios)}] {scenario.id}")
@@ -238,7 +237,7 @@ class EvaluationOrchestrator:
             # Check if already collected
             gt_file = self.ground_truth_dir / f"{scenario.id}.json"
             if gt_file.exists():
-                print(f"    ✓ Already collected, skipping")
+                print("    ✓ Already collected, skipping")
                 continue
 
             # Run scenario
@@ -248,17 +247,17 @@ class EvaluationOrchestrator:
             except Exception as e:
                 print(f"    ✗ Failed: {e}")
 
-    def _load_ground_truth(self, scenario_id: str) -> Optional[Dict[str, Any]]:
+    def _load_ground_truth(self, scenario_id: str) -> dict[str, Any] | None:
         """Load ground truth from file."""
         gt_file = self.ground_truth_dir / f"{scenario_id}.json"
 
         if not gt_file.exists():
             return None
 
-        with open(gt_file, "r", encoding="utf-8") as f:
+        with open(gt_file, encoding="utf-8") as f:
             return json.load(f)
 
-    def _extract_evidence(self, ground_truth: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_evidence(self, ground_truth: dict[str, Any]) -> dict[str, Any]:
         """Extract evidence from ground truth result."""
         # Simplified: in real implementation, parse from ground_truth
         return {
@@ -270,9 +269,9 @@ class EvaluationOrchestrator:
     def _run_analyzer(
         self,
         config: EvaluationConfig,
-        scenario: Dict[str, Any],
-        evidence: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        scenario: dict[str, Any],
+        evidence: dict[str, Any],
+    ) -> dict[str, Any]:
         """Run analyzer with given config."""
 
         # If baseline, use baseline comparator
@@ -284,8 +283,8 @@ class EvaluationOrchestrator:
         return self._stub_evgate_predict(scenario, evidence)
 
     def _stub_evgate_predict(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """Stub for evgate analyzer (replace with real implementation)."""
         # This is where you'll integrate Parts 1-3 code
         return {
@@ -296,8 +295,8 @@ class EvaluationOrchestrator:
         }
 
     def _compute_metrics_for_results(
-        self, results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, results: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Compute metrics across all results."""
         # Group by config
         by_config = {}
@@ -325,7 +324,7 @@ class EvaluationOrchestrator:
 
         return metrics
 
-    def _run_statistical_tests(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _run_statistical_tests(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Run statistical significance tests."""
         # Compare evgate vs baselines
         # (Simplified implementation)

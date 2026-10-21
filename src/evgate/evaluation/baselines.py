@@ -3,9 +3,9 @@ P4-10: Baseline Comparisons
 Implements baseline methods for comparison (B1-B6).
 """
 
-from typing import Dict, Any, List
-from enum import Enum
 import random
+from enum import Enum
+from typing import Any
 
 
 class BaselineMethod(Enum):
@@ -33,8 +33,8 @@ class BaselineComparator:
         random.seed(seed)
 
     def predict(
-        self, method: BaselineMethod, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, method: BaselineMethod, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Generate baseline prediction.
 
@@ -68,8 +68,8 @@ class BaselineComparator:
         return {"error": "Unknown baseline method"}
 
     def _static_analysis_only(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B1: Only use static YAML analysis, ignore runtime evidence."""
 
         # Simple heuristic: if change_type is "policy", predict high impact
@@ -90,8 +90,8 @@ class BaselineComparator:
         }
 
     def _infrastructure_only(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B2: Only use infrastructure evidence, ignore app/runtime."""
 
         # Check if infrastructure evidence shows NetworkPolicy
@@ -109,12 +109,12 @@ class BaselineComparator:
             "predicted_impact": impact,
             "confidence": confidence,
             "method": "infrastructure_only",
-            "reasoning": f"Based on infrastructure evidence only",
+            "reasoning": "Based on infrastructure evidence only",
         }
 
     def _random_predictor(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B3: Random predictions (lower bound baseline)."""
 
         impacts = ["low", "medium", "high"]
@@ -129,8 +129,8 @@ class BaselineComparator:
         }
 
     def _always_high_impact(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B4: Always predict high impact (pessimistic baseline)."""
 
         return {
@@ -141,8 +141,8 @@ class BaselineComparator:
         }
 
     def _always_low_impact(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B5: Always predict low impact (optimistic baseline)."""
 
         return {
@@ -153,8 +153,8 @@ class BaselineComparator:
         }
 
     def _rule_based_simple(
-        self, scenario: Dict[str, Any], evidence: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], evidence: dict[str, Any]
+    ) -> dict[str, Any]:
         """B6: Simple rule-based approach."""
 
         # Rule 1: NetworkPolicy changes are high impact

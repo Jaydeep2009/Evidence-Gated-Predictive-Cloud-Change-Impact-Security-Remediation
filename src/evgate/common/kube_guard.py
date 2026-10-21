@@ -3,8 +3,6 @@ Kubernetes safety guards to prevent accidental production execution.
 """
 
 import subprocess
-import sys
-from typing import Optional
 
 
 class KubeContextError(Exception):
@@ -13,7 +11,7 @@ class KubeContextError(Exception):
     pass
 
 
-def get_current_context() -> Optional[str]:
+def get_current_context() -> str | None:
     """Get the current kubectl context."""
     try:
         result = subprocess.run(
