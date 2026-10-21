@@ -38,6 +38,12 @@ Thumbs.db
 baseline-verification.json
 *.log
 
+# Part 4: Results and ground truth (generated data)
+results/raw/*.json
+results/tables/*.csv
+results/figures/*.png
+fixtures/ground_truth/*.json
+
 # Docker
 .dockerignore
 

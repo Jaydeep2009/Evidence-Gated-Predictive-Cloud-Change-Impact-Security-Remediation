@@ -1,0 +1,40 @@
+# Scenario N03: Allow Backend to Database
+# Category: Network
+
+id: N03
+name: Allow Backend to Database (Remediation)
+category: network
+description: |
+  After N01 blocks database, apply policy allowing backend→database.
+  This should restore connectivity and fix the application.
+
+change_type: policy
+before_config:
+  network_policies:
+    - name: isolate-database
+      effect: "blocks all traffic to database"
+
+after_config:
+  network_policies:
+    - name: isolate-database
+      effect: "blocks all traffic to database"
+    - name: allow-backend-to-database
+      spec: "allow backend pods to reach database on port 5432"
+
+expected_impacts:
+  - "Backend regains database connectivity"
+  - "Health endpoint returns 200"
+  - "Application functions normally"
+
+expected_behavior: low_impact
+
+probes:
+  - url: "http://localhost:30080"
+    method: GET
+    expected_status: 200
+    expected_content: "healthy"
+    timeout: 10
+
+policy_files:
+  - kubernetes/policies/isolate-database.yaml
+  - kubernetes/policies/allow-backend-to-database.yaml

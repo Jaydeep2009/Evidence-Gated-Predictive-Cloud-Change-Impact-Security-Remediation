@@ -1,5 +1,7 @@
+<<<<<<< part4-experiments
+"""Data contracts and schemas shared across parts."""
+=======
 """Frozen contracts v1.0 for evidence-gated system.
-
 This module contains all Pydantic models that define the interfaces between Parts.
 These contracts are FROZEN - any change requires a contracts-change PR approved by
 all four part owners.
@@ -19,6 +21,7 @@ from .change import (
     SecurityObjective,
     Selector,
 )
+
 from .evidence import (
     Evidence,
     Provenance,
@@ -151,3 +154,4 @@ def export_schemas(output_dir: str | Path = "contracts/schemas") -> None:
         print(f"Generated {schema_file}")
 
     print(f"\nExported {len(models)} schemas to {output_path}")
+>>>>>>> main

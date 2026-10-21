@@ -266,3 +266,75 @@ Open source research project for educational purposes.
 
 Final-Year Engineering Student
 Project: Evidence-Gated Predictive Cloud Change Impact & Security Remediation
+
+
+---
+
+## Part 4: Scenarios, Remediation, and Evaluation
+
+**Status:** ✅ Complete (Module implementation 100%, Scenarios 12%)
+
+Part 4 implements the experiment framework for evaluating the Evidence-Gated system.
+
+### Features
+
+- **40 Experiment Scenarios**: Network, RBAC, Mixed, and Typo scenarios
+- **Ground Truth Collection**: Automated probe-based verification
+- **Remediation Generators**: NetworkPolicy, RBAC, and Tofu fixes
+- **Evaluation Framework**: Metrics, baselines, perturbation, statistics
+- **Safety Guards**: Prevents accidental production execution
+
+### Quick Test
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Test all Part 4 modules (no cluster required)
+python test_part4.py
+```
+
+### Documentation
+
+See **[PART4_README.md](PART4_README.md)** for complete Part 4 documentation:
+- Module descriptions (P4-01 through P4-13)
+- Scenario format and categories
+- Remediation usage examples
+- Evaluation metrics and statistics
+- Integration guide for Parts 1-3
+
+### Directory Structure
+
+```
+src/evgate/              # Part 4 Python modules
+├── scenarios/           # Scenario loading and ground truth
+├── remediation/         # Network, RBAC, Tofu remediators
+├── evaluation/          # Metrics, stats, baselines, orchestrator
+├── stubs/              # Integration stubs (replace with Parts 1-3)
+└── common/             # Utilities and safety guards
+
+scenarios/              # 40 experiment scenarios (YAML)
+fixtures/ground_truth/  # Ground truth results (generated)
+results/                # Evaluation results, tables, figures
+```
+
+### Current Scenarios
+
+- ✅ N01: Isolate Database (Milestone 2 reproduction)
+- ✅ N02: Isolate Backend
+- ✅ N03: Allow Backend→Database (remediation)
+- ✅ R01: Restrict Pod List Permission
+- ✅ M01: Network + RBAC Combined
+
+35 additional scenarios to be authored (N04-N10, R02-R10, M02-M10, T01-T10).
+
+### Integration with Parts 1-3
+
+Part 4 uses **stubs** for teammates' code:
+- `src/evgate/stubs/part2_stubs.py` - Evidence collection stub
+- `src/evgate/stubs/part3_stubs.py` - Core analyzer stub
+
+Replace stubs with real implementations when available from:
+https://github.com/Jaydeep2009/Evidence-Gated-Predictive-Cloud-Change-Impact-Security-Remediation
+
+---

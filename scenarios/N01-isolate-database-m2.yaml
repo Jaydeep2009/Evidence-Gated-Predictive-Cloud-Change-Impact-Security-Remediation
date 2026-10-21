@@ -1,0 +1,38 @@
+# Scenario N01: Isolate Database (Milestone 2 Reproduction)
+# Category: Network
+# This reproduces your completed Milestone 2 experiment
+
+id: N01
+name: Isolate Database with NetworkPolicy
+category: network
+description: |
+  Apply NetworkPolicy that blocks backend→database traffic.
+  This should cause application failure (503 errors).
+  Reproduces Milestone 2 experiment.
+
+change_type: policy
+before_config:
+  network_policies: []
+  connectivity: "frontend → backend → database (all working)"
+
+after_config:
+  network_policies:
+    - name: isolate-database
+      spec: "deny all ingress to database pods"
+
+expected_impacts:
+  - "Backend cannot connect to database"
+  - "Health endpoint returns 503"
+  - "Frontend shows database connection error"
+
+expected_behavior: high_impact
+
+probes:
+  - url: "http://localhost:30080"
+    method: GET
+    expected_status: 503
+    expected_content: "database"
+    timeout: 10
+
+policy_files:
+  - kubernetes/policies/isolate-database.yaml

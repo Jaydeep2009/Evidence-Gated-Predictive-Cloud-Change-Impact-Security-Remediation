@@ -1,0 +1,37 @@
+# Scenario M01: Network + RBAC Combined
+# Category: Mixed
+
+id: M01
+name: Network Policy and RBAC Together
+category: mixed
+description: |
+  Apply both NetworkPolicy and RBAC restrictions simultaneously.
+  Tests analyzer's ability to handle multiple constraint types.
+
+change_type: policy
+before_config:
+  network_policies: []
+  rbac: "default permissions"
+
+after_config:
+  network_policies:
+    - name: isolate-database
+  rbac:
+    - removed: "backend pod list permission"
+
+expected_impacts:
+  - "Backend cannot connect to database (network)"
+  - "Backend cannot list pods (RBAC)"
+  - "Multiple failure modes active"
+
+expected_behavior: high_impact
+
+probes:
+  - url: "http://localhost:30080"
+    method: GET
+    expected_status: 503
+    timeout: 10
+
+policy_files:
+  - kubernetes/policies/isolate-database.yaml
+  - kubernetes/policies/backend-role-restricted.yaml
